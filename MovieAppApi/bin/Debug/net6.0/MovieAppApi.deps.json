@@ -8,6 +8,7 @@
     ".NETCoreApp,Version=v6.0": {
       "MovieAppApi/1.0.0": {
         "dependencies": {
+          "Microsoft.EntityFrameworkCore.Design": "7.0.17",
           "Microsoft.EntityFrameworkCore.SqlServer": "7.0.16",
           "Microsoft.EntityFrameworkCore.Tools": "7.0.17",
           "Swashbuckle.AspNetCore": "6.5.0"

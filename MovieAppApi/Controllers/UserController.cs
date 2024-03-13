@@ -26,7 +26,9 @@ namespace MovieAppApi.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
-            var user = await _movieContext.Users.FirstOrDefaultAsync(p => p.Id == id);
+            var user = await _movieContext.Users
+                .Include(u => u.Histories)
+                .FirstOrDefaultAsync(p => p.Id == id);
             if (user == null)
             {
                 return NotFound();

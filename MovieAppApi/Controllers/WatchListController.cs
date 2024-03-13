@@ -19,7 +19,7 @@ namespace MovieAppApi.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var watchlist = await _movieContext.WatchList.ToListAsync();
+            var watchlist = await _movieContext.WatchLists.ToListAsync();
             return Ok(watchlist);
         }
     }

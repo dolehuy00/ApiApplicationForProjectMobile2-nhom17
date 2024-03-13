@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MovieAppApi.Models
 {
@@ -6,7 +7,6 @@ namespace MovieAppApi.Models
     {
         public int Id { get; set; }
         public int UserId {  get; set; }
-        public User User { get; set; } = null!;
         public string? InformationMovie { get; set; }
         public DateTime? WatchedDate { get; set;}
         public int SecondsCount { get; set; }

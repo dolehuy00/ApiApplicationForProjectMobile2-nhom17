@@ -10,7 +10,7 @@ namespace MovieAppApi.Models
         public string? Email { get; set; }
         public string? Password { get; set; }
         public string? Avatar { get; set; }
-        public ICollection<History> Histories { get; } = new List<History>();
+        public List<History>? Histories {  get; set; }
         public ICollection<WatchList>? WatchList { get; set; }
     }
 }
