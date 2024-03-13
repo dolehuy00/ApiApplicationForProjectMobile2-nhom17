@@ -95,7 +95,7 @@ namespace MovieAppApi.Migrations
                     b.ToTable("WatchList", (string)null);
                 });
 
-            modelBuilder.Entity("MovieAppApi.Models.WatchListDetail", b =>
+            modelBuilder.Entity("MovieAppApi.Models.WatchListItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -113,24 +113,22 @@ namespace MovieAppApi.Migrations
 
                     b.HasIndex("WatchListId");
 
-                    b.ToTable("WatchListDetail", (string)null);
+                    b.ToTable("WatchListItem", (string)null);
                 });
 
             modelBuilder.Entity("MovieAppApi.Models.History", b =>
                 {
-                    b.HasOne("MovieAppApi.Models.User", "User")
+                    b.HasOne("MovieAppApi.Models.User", null)
                         .WithMany("Histories")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("MovieAppApi.Models.WatchList", b =>
                 {
                     b.HasOne("MovieAppApi.Models.User", "User")
-                        .WithMany("WatchList")
+                        .WithMany("WatchLists")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -138,10 +136,10 @@ namespace MovieAppApi.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("MovieAppApi.Models.WatchListDetail", b =>
+            modelBuilder.Entity("MovieAppApi.Models.WatchListItem", b =>
                 {
                     b.HasOne("MovieAppApi.Models.WatchList", "WatchList")
-                        .WithMany("WatchListDetail")
+                        .WithMany("WatchListDetails")
                         .HasForeignKey("WatchListId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -153,12 +151,12 @@ namespace MovieAppApi.Migrations
                 {
                     b.Navigation("Histories");
 
-                    b.Navigation("WatchList");
+                    b.Navigation("WatchLists");
                 });
 
             modelBuilder.Entity("MovieAppApi.Models.WatchList", b =>
                 {
-                    b.Navigation("WatchListDetail");
+                    b.Navigation("WatchListDetails");
                 });
 #pragma warning restore 612, 618
         }

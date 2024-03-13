@@ -13,14 +13,14 @@ namespace MovieAppApi.Data
         public DbSet<User> Users { get; set; }
         public DbSet<WatchList> WatchLists { get; set; }
         public DbSet<History> Histories { get; set; }
-        public DbSet<WatchListDetail> ListDetails { get; set; }
+        public DbSet<WatchListItem> WatchListItems { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>().ToTable("Users");
             modelBuilder.Entity<WatchList>().ToTable("WatchList");
             modelBuilder.Entity<History>().ToTable("History");
-            modelBuilder.Entity<WatchListDetail>().ToTable("WatchListDetail");
+            modelBuilder.Entity<WatchListItem>().ToTable("WatchListItem");
         }
     }
 }

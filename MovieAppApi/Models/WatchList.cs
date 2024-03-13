@@ -8,6 +8,6 @@ namespace MovieAppApi.Models
         public int UserId { get; set; }
         public User User { get; set; } = null!;
         public string? Title { get; set; }
-        public ICollection<WatchListDetail>? WatchListDetail { get; set; }
+        public ICollection<WatchListItem>? WatchListDetails { get; set; }
     }
 }

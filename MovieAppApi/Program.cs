@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using MovieAppApi.Data;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,10 +14,6 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<MovieContext>(options => 
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddControllers().AddJsonOptions(options =>
-{
-    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
-});
 
 var app = builder.Build();
 

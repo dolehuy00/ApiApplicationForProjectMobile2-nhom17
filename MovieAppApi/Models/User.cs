@@ -11,6 +11,6 @@ namespace MovieAppApi.Models
         public string? Password { get; set; }
         public string? Avatar { get; set; }
         public List<History>? Histories {  get; set; }
-        public ICollection<WatchList>? WatchList { get; set; }
+        public ICollection<WatchList>? WatchLists { get; set; }
     }
 }
