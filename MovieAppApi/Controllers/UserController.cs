@@ -21,36 +21,51 @@ namespace MovieAppApi.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> CheckLogin(string email, string password)
+        public async Task<IActionResult> CheckLogin([FromBody] LoginDTO loginDTO)
         {
-            var user = await _movieContext.Users.FirstOrDefaultAsync(u => u.Email == email);
-            if (user != null && password.Equals(user.Password)) 
+            try
             {
-                return Ok(buildJSON.UserCheckLogin(user));
+                var user = await _movieContext.Users.FirstOrDefaultAsync(u => u.Email == loginDTO.Email);
+                if (user != null && loginDTO.Password.Equals(user.Password))
+                {
+                    return Ok(buildJSON.UserCheckLogin(user));
+                }
+                return BadRequest("Not match");
+            }catch (Exception)
+            {
+                return BadRequest();
             }
-            return BadRequest("Not match");
+            
         }
 
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] UserDTO userDTO)
         {
-            var user = await _movieContext.Users.FirstOrDefaultAsync(u => u.Email == userDTO.Email);
-            if (user != null)
+            try
             {
-                return BadRequest("This email is already in use by another account!");
-            }else if(userDTO.Password != userDTO.PasswordConfirm)
-            {
-                return BadRequest("Password confirm is not the same password");
+                var user = await _movieContext.Users.FirstOrDefaultAsync(u => u.Email == userDTO.Email);
+                if (user != null)
+                {
+                    return BadRequest("This email is already in use by another account!");
+                }
+                else if (userDTO.Password != userDTO.PasswordConfirm)
+                {
+                    return BadRequest("Password confirm is not the same password");
+                }
+                else
+                {
+                    User newUser = new User();
+                    newUser.Email = userDTO.Email;
+                    newUser.Name = userDTO.Name;
+                    newUser.Password = userDTO.Password;
+                    await _movieContext.Users.AddAsync(newUser);
+                    await _movieContext.SaveChangesAsync();
+                    return Ok();
+                }
             }
-            else
+            catch (Exception)
             {
-                User newUser = new User();
-                newUser.Email = userDTO.Email;
-                newUser.Name = userDTO.Name;
-                newUser.Password = userDTO.Password;
-                await _movieContext.Users.AddAsync(newUser);
-                await _movieContext.SaveChangesAsync();
-                return Ok(userDTO);
+                return BadRequest();
             }
         }
     }

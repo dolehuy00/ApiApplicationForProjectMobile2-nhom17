@@ -22,20 +22,34 @@ namespace MovieAppApi.Controllers
         [HttpGet("all/{userId}")]
         public async Task<IActionResult> GetAll(int userId)
         {
-            var allWatchLists = await _movieContext.WatchLists
+            try
+            {
+                var allWatchLists = await _movieContext.WatchLists
                 .Where(h => h.UserId == userId)
                 .ToListAsync();
-            return Ok(allWatchLists);
+                return Ok(allWatchLists);
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            } 
         }
 
         [HttpPost("add")]
         public async Task<IActionResult> AddNew(WatchListDTO watchListDTO)
         {
-            var preWatchList = new WatchList();
-            preWatchList.UserId = watchListDTO.UserId;
-            preWatchList.Title = watchListDTO.Title;
-            var newWatchList = await _movieContext.WatchLists.AddAsync(preWatchList);
-            return Ok(newWatchList);
+            try
+            {
+                var preWatchList = new WatchList();
+                preWatchList.UserId = watchListDTO.UserId;
+                preWatchList.Title = watchListDTO.Title;
+                var newWatchList = await _movieContext.WatchLists.AddAsync(preWatchList);
+                return Ok(newWatchList);
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            } 
         }
 
         [HttpPut("edit/{watchListId}")]
