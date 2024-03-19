@@ -16,11 +16,5 @@ namespace MovieAppApi.Controllers
             _movieContext = movieContext;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
-        {
-            var watchListItem = await _movieContext.WatchListItems.ToListAsync();
-            return Ok(watchListItem);
-        }
     }
 }
