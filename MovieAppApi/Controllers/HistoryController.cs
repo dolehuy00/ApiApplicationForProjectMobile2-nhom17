@@ -79,6 +79,7 @@ namespace MovieAppApi.Controllers
             try
             {
                 await _movieContext.SaveChangesAsync();
+                return Ok();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -91,7 +92,6 @@ namespace MovieAppApi.Controllers
                     throw;
                 }
             }
-            return NoContent();
         }
 
         [HttpDelete("delete-all")]
@@ -125,6 +125,30 @@ namespace MovieAppApi.Controllers
                     return NotFound("Không tìm thấy lịch sử để xóa.");
                 }
                 _movieContext.Histories.Remove(historyToDelete);
+                await _movieContext.SaveChangesAsync();
+                return Ok();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpDelete("delete-many")]
+        public async Task<IActionResult> DeleteManyHistories(int userId, [FromBody] int[] historyIds)
+        {
+            if (historyIds == null || historyIds.Length == 0)
+            {
+                return BadRequest("Danh sách id trống.");
+            }
+            try
+            {
+                var userHistories = await _movieContext.Histories.Where(w => historyIds.Contains(w.Id) && w.UserId == userId).ToListAsync();
+                if (userHistories.Count == 0)
+                {
+                    return NotFound("Không tìm thấy danh sách để xóa.");
+                }
+                _movieContext.Histories.RemoveRange(userHistories);
                 await _movieContext.SaveChangesAsync();
                 return Ok();
             }
