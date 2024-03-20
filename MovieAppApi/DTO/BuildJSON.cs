@@ -14,5 +14,27 @@ namespace MovieAppApi.DTO
                 Avatar = user.Avatar,
             };
         }
+        public dynamic WatchListAll(ICollection<WatchList> watchLists) 
+        {
+            var watchListDTO = watchLists
+                .Select(source => new
+                {
+                    Id = source.Id,
+                    UserId = source.UserId,
+                    Title = source.Title,
+                
+                })
+                .ToList();
+            return watchListDTO;
+        }
+        public dynamic WatchListGet(WatchList watchList)
+        {
+            return new
+            {
+                Id = watchList.Id,
+                UserId = watchList.UserId,
+                Title = watchList.Title
+            };
+        }
     }
 }

@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using MovieAppApi.Data;
 using MovieAppApi.DTO;
 using MovieAppApi.Models;
-using NuGet.Packaging;
 
 namespace MovieAppApi.Controllers
 {
@@ -13,10 +12,12 @@ namespace MovieAppApi.Controllers
     public class WatchListController : ControllerBase
     {
         private MovieContext _movieContext;
+        private BuildJSON buildJSON;
 
         public WatchListController(MovieContext movieContext)
         {
             _movieContext = movieContext;
+            this.buildJSON = new BuildJSON();
         }
 
         [HttpGet("all/{userId}")]
@@ -27,7 +28,7 @@ namespace MovieAppApi.Controllers
                 var allWatchLists = await _movieContext.WatchLists
                 .Where(h => h.UserId == userId)
                 .ToListAsync();
-                return Ok(allWatchLists);
+                return Ok(buildJSON.WatchListAll(allWatchLists));
             }
             catch (Exception)
             {
@@ -40,52 +41,49 @@ namespace MovieAppApi.Controllers
         {
             try
             {
-                var preWatchList = new WatchList();
-                preWatchList.UserId = watchListDTO.UserId;
-                preWatchList.Title = watchListDTO.Title;
-                var newWatchList = await _movieContext.WatchLists.AddAsync(preWatchList);
-                return Ok(newWatchList);
+                var newWatchList = new WatchList();
+                newWatchList.UserId = watchListDTO.UserId;
+                newWatchList.Title = watchListDTO.Title;
+                await _movieContext.WatchLists.AddAsync(newWatchList);
+                await _movieContext.SaveChangesAsync();
+                return Ok(buildJSON.WatchListGet(newWatchList));
             }
             catch (Exception)
             {
                 return BadRequest();
-            } 
+            }
         }
 
         [HttpPut("edit/{watchListId}")]
         public async Task<IActionResult> Update(int watchListId, [FromBody] WatchListDTO watchListDTO)
         {
-            if (watchListId != watchListDTO.Id)
-            {
-                return BadRequest();
-            }
-            var preWatchList = new WatchList();
-            preWatchList.UserId = watchListDTO.UserId;
-            preWatchList.Title = watchListDTO.Title;
-            _movieContext.Entry(preWatchList).State = EntityState.Modified;
             try
             {
+                var oldWatchList = await _movieContext.WatchLists.FirstOrDefaultAsync(w => w.Id == watchListId);
+                if (oldWatchList == null)
+                {
+                    return NotFound();
+                }
+                if (watchListId != watchListDTO.Id)
+                {
+                    return BadRequest();
+                }
+                oldWatchList.Title = watchListDTO.Title;
                 await _movieContext.SaveChangesAsync();
                 return Ok();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!_movieContext.WatchLists.Any(w => w.Id == watchListId))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return BadRequest();
             }
         }
+
         [HttpDelete("delete-one/{watchListId}")]
-        public async Task<IActionResult> DeleteAWatchList(int userId, int watchListId)
+        public async Task<IActionResult> DeleteAWatchList(int watchListId)
         {
             try
             {
-                var watchListToDelete = await _movieContext.WatchLists.Where(w => w.UserId == userId && w.Id == watchListId).FirstOrDefaultAsync();
+                var watchListToDelete = await _movieContext.WatchLists.Where(w => w.Id == watchListId).FirstOrDefaultAsync();
                 if (watchListToDelete == null)
                 {
                     return NotFound("Không tìm thấy danh sách để xóa.");
@@ -100,7 +98,7 @@ namespace MovieAppApi.Controllers
             }
         }
         [HttpDelete("delete-many")]
-        public async Task<IActionResult> DeleteManyWatchLists(int userId, [FromBody] int[] watchListIds)
+        public async Task<IActionResult> DeleteManyWatchLists([FromBody] int[] watchListIds)
         {
             if (watchListIds == null || watchListIds.Length == 0)
             {
@@ -108,7 +106,7 @@ namespace MovieAppApi.Controllers
             }
             try
             {
-                var userWatchLists = await _movieContext.WatchLists.Where(w => watchListIds.Contains(w.Id) && w.UserId == userId).ToListAsync();
+                var userWatchLists = await _movieContext.WatchLists.Where(w => watchListIds.Contains(w.Id)).ToListAsync();
                 if (userWatchLists.Count == 0)
                 {
                     return NotFound("Không tìm thấy danh sách để xóa.");
