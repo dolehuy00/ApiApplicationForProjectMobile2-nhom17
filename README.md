@@ -35,6 +35,20 @@ Body JSON object
 
 
 
+### Request change password
+```
+  POST /api/User/change-password
+```
+Body JSON object
+| Attributes | Type     | Description                       |
+| :--------  | :------- | :-------------------------------- |
+| `oldPassword`     | `string` | **Required** |
+| `email`    | `string` | **Required** |
+| `newPassword` | `string` | **Required** |
+| `passwordconfirm`     | `string` | **Required** |
+
+
+
 ### Request get all histories
 ```
   GET /api/History/all/{userId}

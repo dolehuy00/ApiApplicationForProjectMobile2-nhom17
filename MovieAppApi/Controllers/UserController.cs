@@ -34,8 +34,38 @@ namespace MovieAppApi.Controllers
             }catch (Exception)
             {
                 return BadRequest();
+            }   
+        }
+
+        [HttpPost("change-password")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePassDTO changePassDTO)
+        {
+            try
+            {
+                var user = await _movieContext.Users.FirstOrDefaultAsync(u => u.Email == changePassDTO.Email);
+                if (user == null)
+                {
+                    return NotFound("This account is'nt exist!");
+                }
+                else if (changePassDTO.NewPassword != changePassDTO.PasswordConfirm)
+                {
+                    return BadRequest("Password confirm is not the same password");
+                }
+                else if (changePassDTO.OldPassword != user.Password)
+                {
+                    return BadRequest("Old password not match!");
+                }
+                else
+                {
+                    user.Password = changePassDTO.NewPassword;
+                    await _movieContext.SaveChangesAsync();
+                    return Ok();
+                }
             }
-            
+            catch (Exception)
+            {
+                return BadRequest();
+            }
         }
 
         [HttpPost("register")]
