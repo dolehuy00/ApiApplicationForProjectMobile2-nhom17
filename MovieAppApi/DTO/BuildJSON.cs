@@ -16,7 +16,7 @@ namespace MovieAppApi.DTO
         }
         public dynamic WatchListAll(ICollection<WatchList> watchLists) 
         {
-            var watchListDTO = watchLists
+            var watchListDTOs = watchLists
                 .Select(source => new
                 {
                     Id = source.Id,
@@ -25,7 +25,7 @@ namespace MovieAppApi.DTO
                 
                 })
                 .ToList();
-            return watchListDTO;
+            return watchListDTOs;
         }
         public dynamic WatchListGet(WatchList watchList)
         {
@@ -34,6 +34,27 @@ namespace MovieAppApi.DTO
                 Id = watchList.Id,
                 UserId = watchList.UserId,
                 Title = watchList.Title
+            };
+        }
+
+        public dynamic WatchListItemAll(ICollection<WatchListItem> watchListItems)
+        {
+            var watchListItemDTOs = watchListItems
+                .Select(source => new WatchListItemDTO
+                {
+                    Id = source.Id,
+                    WatchListId = source.WatchListId,
+                    InformationMovie = source.InformationMovie
+                }).ToList();
+            return watchListItemDTOs;
+        }
+        public dynamic WatchListItemGet(WatchListItem watchListItem)
+        {
+            return new
+            {
+                Id = watchListItem.Id,
+                WatchListId = watchListItem.WatchListId,
+                InformationMovie = watchListItem.InformationMovie
             };
         }
     }

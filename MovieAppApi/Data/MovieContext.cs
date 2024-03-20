@@ -14,6 +14,7 @@ namespace MovieAppApi.Data
         public DbSet<WatchList> WatchLists { get; set; }
         public DbSet<History> Histories { get; set; }
         public DbSet<WatchListItem> WatchListItems { get; set; }
+        public DbSet<ReviewVideo> ReviewVideos { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -21,6 +22,7 @@ namespace MovieAppApi.Data
             modelBuilder.Entity<WatchList>().ToTable("WatchList");
             modelBuilder.Entity<History>().ToTable("History");
             modelBuilder.Entity<WatchListItem>().ToTable("WatchListItem");
+            modelBuilder.Entity<ReviewVideo>().ToTable("ReviewVideo");
         }
     }
 }

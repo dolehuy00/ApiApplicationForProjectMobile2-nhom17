@@ -66,11 +66,11 @@ Body JSON object
 | `take`     | `int` | **Required** |
 | `userId`     | `int` | **Required** |
 
-For example: With request "/api/History/all/2/20/1".
+For example: With request `/api/History/all/2/20/1`.
 In request:
-  skip  = 2,
-  take = 20,
-  userId = 1.
+  `skip  = 2`,
+  `take = 20`,
+  `userId = 1`.
 The server will respond to the latest history from 3 to 22 (skip record 1,2 and take the next 20 records).
 
 
@@ -204,7 +204,7 @@ Body JSON object
 
 ### Request delte a playlist
 ```
-  POST /api/WatchList/delete-one/{watchListId}
+  DELETE /api/WatchList/delete-one/{watchListId}
 ```
 | Path parameters | Type     | Description                       |
 | :--------  | :------- | :-------------------------------- |
@@ -219,3 +219,86 @@ Body JSON object
 ```
 * Body is a JSON array `playListIds` type `integer`
 + For example: `[1,2]`
+
+
+### Request get all playlist items
+```
+  GET /api/WatchListItem/all/{watchListId}
+```
+| Path parameters | Type     | Description                       |
+| :--------  | :------- | :-------------------------------- |
+| `watchListId`     | `int` | **Required** |
+
+
+### Request add a new playlist item
+```
+  POST /api/WatchListItem/add
+```
+Body JSON object
+| Attributes | Type     | Description                       |
+| :--------  | :------- | :-------------------------------- |
+| `watchListId`     | `int` | **Required** |
+| `informationMovie`    | `string` | **Required**|
+
+
+### Request check a movie is exist in playlist
+```
+  GET /api/WatchListItem/check
+```
+Body JSON object
+| Attributes | Type     | Description                       |
+| :--------  | :------- | :-------------------------------- |
+| `watchListId`     | `int` | **Required** |
+| `informationMovie`    | `string` | **Required**|
+
+
+
+
+### Request delte a playlist item
+```
+  DELETE /api/WatchListItem/delete-one/{watchListItemId}
+```
+| Path parameters | Type     | Description                       |
+| :--------  | :------- | :-------------------------------- |
+| `watchListItemId`     | `int` | **Required** |
+
+
+
+
+### Request delete many playlist item
+```
+  DELETE /api/WatchListItem/delete-many
+```
+* Body is a JSON array `playListItemIds` type `integer`
++ For example: `[1,2]`
+
+
+
+### Request get all review video
+```
+  GET /api/ReviewVideo/all/{informationMovie}
+```
+| Path parameters | Type     | Description                       |
+| :--------  | :------- | :-------------------------------- |
+| `informationMovie`     | `string` | **Required** |
+
+
+### Request add a new review video
+```
+  POST /api/ReviewVideo/add
+```
+Body JSON object
+| Attributes | Type     | Description                       |
+| :--------  | :------- | :-------------------------------- |
+| `informationReviewVideo`     | `string` | **Required** |
+| `informationMovie`    | `string` | **Required**|
+
+
+
+### Request delte a review video
+```
+  DELETE /api/ReviewVideo/delete-one/{reviewVideoId}
+```
+| Path parameters | Type     | Description                       |
+| :--------  | :------- | :-------------------------------- |
+| `reviewVideoId`     | `int` | **Required** |
