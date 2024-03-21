@@ -49,6 +49,42 @@ Body JSON object
 
 
 
+### Request forgot password
+```
+  POST /api/User/forgot-password-request
+```
+Body JSON object
+| Attributes | Type     | Description                       |
+| :--------  | :------- | :-------------------------------- |
+| `email`    | `string` | **Required** |
+
+
+### Request forgot password check code
+```
+  POST /api/User/forgot-password-checkcode
+```
+Body JSON object
+| Attributes | Type     | Description                       |
+| :--------  | :------- | :-------------------------------- |
+| `code`     | `int` | **Required** |
+| `email`    | `string` | **Required** |
+
+
+
+### Request forgot password change password
+```
+  POST /api/User/forgot-password-change
+```
+Body JSON object
+| Attributes | Type     | Description                       |
+| :--------  | :------- | :-------------------------------- |
+| `code`     | `int` | **Required** |
+| `email`    | `string` | **Required** |
+| `password` | `string` | **Required** |
+| `passwordConfirm`     | `string` | **Required** |
+
+
+
 ### Request get all histories
 ```
   GET /api/History/all/{userId}

@@ -1,9 +1,12 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using MovieAppApi.Data;
 using MovieAppApi.DTO;
 using MovieAppApi.Models;
+using MovieAppApi.Service;
+using NuGet.Common;
 
 namespace MovieAppApi.Controllers
 {
@@ -13,11 +16,13 @@ namespace MovieAppApi.Controllers
     {
         private MovieContext _movieContext;
         private BuildJSON buildJSON;
+        private readonly IMemoryCache _cache;
 
-        public UserController(MovieContext movieContext)
+        public UserController(MovieContext movieContext, IMemoryCache memoryCache)
         {
             _movieContext = movieContext;
             this.buildJSON = new BuildJSON();
+            _cache = memoryCache;
         }
 
         [HttpPost("login")]
@@ -63,6 +68,84 @@ namespace MovieAppApi.Controllers
                 }
             }
             catch (Exception)
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpPost("forgot-password-request")]
+        public async Task<IActionResult> ForgotPasswordRequest([FromBody] ForgotDTO forgotDTO)
+        {
+            try
+            {
+                var existUser = await _movieContext.Users.Where(u => u.Email == forgotDTO.Email).FirstOrDefaultAsync() != null;
+                if (existUser)
+                {
+                    var code = _cache.Get<Code>(forgotDTO.Email);
+                    if(code != null)
+                    {
+                        if(DateTimeOffset.UtcNow.AddMinutes(4) < code.DeadTime)
+                        {
+                            return BadRequest("Too many request, please wait 1 minute since the last successful request");
+                        }
+                    }
+                    int randomCode = new Random().Next(100100, 999999);
+                    _cache.Set(forgotDTO.Email, new Code(randomCode, DateTimeOffset.UtcNow.AddMinutes(5)), TimeSpan.FromMinutes(5));
+                    await new PasswordResetService().SendPasswordResetEmail(forgotDTO.Email, randomCode);
+                }
+                var responseData = new{existUser = existUser};
+                return Ok(responseData);
+            }
+            catch(Exception)
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpPost("forgot-password-checkcode")]
+        public IActionResult ForgotPasswordCheckCode([FromBody] ForgotDTO forgotDTO)
+        {
+            try
+            {
+                var code = _cache.Get<Code>(forgotDTO.Email);
+                var codeMatch = code != null && code.CodeNumber.Equals(forgotDTO.Code);
+                var responseData = new
+                {
+                    codeMatch = codeMatch
+                };
+                return Ok(responseData);
+            }
+            catch
+            {
+                return BadRequest();
+            }
+        }
+
+
+        [HttpPost("forgot-password-change")]
+        public async Task<IActionResult> ForgotPasswordChange([FromBody] ForgotDTO forgotDTO)
+        {
+            try
+            {
+                if(forgotDTO.Password != forgotDTO.PasswordConfirm)
+                {
+                    return BadRequest("Password confirm is not the same password");
+                }
+                var user = await _movieContext.Users.Where(u => u.Email == forgotDTO.Email).FirstOrDefaultAsync();
+                var code = _cache.Get<Code>(forgotDTO.Email);
+                var changeSuccess = false;
+                if (user != null && code != null && code.CodeNumber.Equals(forgotDTO.Code))
+                {
+                    user.Password = forgotDTO.Password;
+                    changeSuccess = await _movieContext.SaveChangesAsync() == 1;
+                }
+                var responseData = new
+                {
+                    changeSuccess = changeSuccess
+                };
+                return Ok(responseData);
+            }
+            catch
             {
                 return BadRequest();
             }
