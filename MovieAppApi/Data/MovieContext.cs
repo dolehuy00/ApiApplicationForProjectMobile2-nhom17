@@ -1,13 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MovieAppApi.Models;
-using System.Reflection.Metadata;
 
 namespace MovieAppApi.Data
 {
     public class MovieContext : DbContext
     {
         public MovieContext(DbContextOptions<MovieContext> options) : base(options)
-        {  
+        {
         }
 
         public DbSet<User> Users { get; set; }

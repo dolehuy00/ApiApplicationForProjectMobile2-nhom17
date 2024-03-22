@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "BwwWaHRUMhWB6T+wn2j4WPs6ERL1s0v7QVm9Nth5HSalE+EMHE0naJ4mPHd427MZTBAkWen4NllcEuA7P5ZX5w==",
+  "dgSpecHash": "7YVUu+VcrQ15EMmc5XfnIX/CTybPwDgDGLNLnuSsz2yhvZzPEduNx+vNT2GAFotXj+P4MQvYzbK0vJLrO1aGjw==",
   "success": true,
   "projectFilePath": "C:\\Users\\PC\\Desktop\\AndroidNangCao\\Mobile2\\MovieAppApi\\MovieAppApi.csproj",
   "expectedPackageFiles": [
@@ -61,6 +61,7 @@
     "C:\\Users\\PC\\.nuget\\packages\\messagepack\\2.1.152\\messagepack.2.1.152.nupkg.sha512",
     "C:\\Users\\PC\\.nuget\\packages\\messagepack.annotations\\2.1.152\\messagepack.annotations.2.1.152.nupkg.sha512",
     "C:\\Users\\PC\\.nuget\\packages\\messagepackanalyzer\\2.1.152\\messagepackanalyzer.2.1.152.nupkg.sha512",
+    "C:\\Users\\PC\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\6.0.13\\microsoft.aspnetcore.authentication.jwtbearer.6.0.13.nupkg.sha512",
     "C:\\Users\\PC\\.nuget\\packages\\microsoft.aspnetcore.razor.language\\6.0.0\\microsoft.aspnetcore.razor.language.6.0.0.nupkg.sha512",
     "C:\\Users\\PC\\.nuget\\packages\\microsoft.bcl.asyncinterfaces\\5.0.0\\microsoft.bcl.asyncinterfaces.5.0.0.nupkg.sha512",
     "C:\\Users\\PC\\.nuget\\packages\\microsoft.build\\17.3.2\\microsoft.build.17.3.2.nupkg.sha512",

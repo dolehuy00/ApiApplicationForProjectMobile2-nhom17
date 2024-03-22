@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
-namespace MovieAppApi.Models
+﻿namespace MovieAppApi.Models
 {
     public class WatchList
     {

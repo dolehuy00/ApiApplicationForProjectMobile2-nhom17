@@ -1,20 +1,25 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MovieAppApi.Data;
 using MovieAppApi.DTO;
 using MovieAppApi.Models;
+using MovieAppApi.Service;
 
 namespace MovieAppApi.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class HistoryController : ControllerBase
     {
         private MovieContext _movieContext;
+        private readonly TokenJwtService tokenJwtServ;
 
         public HistoryController(MovieContext movieContext)
         {
             _movieContext = movieContext;
+            tokenJwtServ = new TokenJwtService();
         }
 
         [HttpGet("all/{userId}")]
@@ -22,30 +27,48 @@ namespace MovieAppApi.Controllers
         {
             try
             {
-                var allHistories = await _movieContext.Histories
-                    .Where(h => h.UserId == userId)
-                    .OrderByDescending(h => h.WatchedDate)
-                    .ToListAsync();
-                return Ok(allHistories);
+                var userIdInToken = tokenJwtServ.GetUserIdFromToken(HttpContext);
+                if (int.Parse(userIdInToken) == userId)
+                {
+                    var allHistories = await _movieContext.Histories
+                        .Where(h => h.UserId == userId)
+                        .OrderByDescending(h => h.WatchedDate)
+                        .ToListAsync();
+                    return Ok(allHistories);
+                }
+                else
+                {
+                    return Unauthorized();
+                }
+
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
-            
+
         }
+
 
         [HttpGet("{limit}/{userId}")]
         public async Task<IActionResult> GetLimitNewestHistory(int userId, int limit)
         {
             try
             {
-                var latestHistories = await _movieContext.Histories
-                    .Where(h => h.UserId == userId)
-                    .OrderByDescending(h => h.WatchedDate)
-                    .Take(limit)
-                    .ToListAsync();
-                return Ok(latestHistories);
+                var userIdInToken = tokenJwtServ.GetUserIdFromToken(HttpContext);
+                if (int.Parse(userIdInToken) == userId)
+                {
+                    var latestHistories = await _movieContext.Histories
+                        .Where(h => h.UserId == userId)
+                        .OrderByDescending(h => h.WatchedDate)
+                        .Take(limit)
+                        .ToListAsync();
+                    return Ok(latestHistories);
+                }
+                else
+                {
+                    return Unauthorized();
+                }
             }
             catch (Exception)
             {
@@ -58,13 +81,21 @@ namespace MovieAppApi.Controllers
         {
             try
             {
-                var latestHistories = await _movieContext.Histories
-                    .Where(h => h.UserId == userId)
-                    .OrderByDescending(h => h.WatchedDate)
-                    .Skip(skip)
-                    .Take(take)
-                    .ToListAsync();
-                return Ok(latestHistories);
+                var userIdInToken = tokenJwtServ.GetUserIdFromToken(HttpContext);
+                if (int.Parse(userIdInToken) == userId)
+                {
+                    var latestHistories = await _movieContext.Histories
+                        .Where(h => h.UserId == userId)
+                        .OrderByDescending(h => h.WatchedDate)
+                        .Skip(skip)
+                        .Take(take)
+                        .ToListAsync();
+                    return Ok(latestHistories);
+                }
+                else
+                {
+                    return Unauthorized();
+                }
             }
             catch (Exception)
             {
@@ -77,49 +108,66 @@ namespace MovieAppApi.Controllers
         {
             try
             {
-                var oldHistory = await _movieContext.Histories.Where(h => h.InformationMovie == historyDTO.InformationMovie).FirstOrDefaultAsync();
-
-                if (oldHistory == null)
+                var userIdInToken = tokenJwtServ.GetUserIdFromToken(HttpContext);
+                if (int.Parse(userIdInToken) == historyDTO.UserId)
                 {
-                    var newHistory = new History();
-                    newHistory.UserId = historyDTO.UserId;
-                    newHistory.InformationMovie = historyDTO.InformationMovie;
-                    newHistory.WatchedDate = historyDTO.WatchedDate;
-                    newHistory.SecondsCount = historyDTO.SecondsCount;
-                    await _movieContext.Histories.AddAsync(newHistory);
-                    await _movieContext.SaveChangesAsync();
-                    return Ok(newHistory);
+                    var oldHistory = await _movieContext.Histories.Where(h => h.InformationMovie == historyDTO.InformationMovie).FirstOrDefaultAsync();
+                    if (oldHistory == null)
+                    {
+                        var newHistory = new History();
+                        newHistory.UserId = historyDTO.UserId;
+                        newHistory.InformationMovie = historyDTO.InformationMovie;
+                        newHistory.WatchedDate = historyDTO.WatchedDate;
+                        newHistory.SecondsCount = historyDTO.SecondsCount;
+                        await _movieContext.Histories.AddAsync(newHistory);
+                        await _movieContext.SaveChangesAsync();
+                        return Ok(newHistory);
+                    }
+                    else
+                    {
+                        oldHistory.WatchedDate = historyDTO.WatchedDate;
+                        oldHistory.SecondsCount = historyDTO.SecondsCount;
+                        await _movieContext.SaveChangesAsync();
+                        return Ok(oldHistory);
+                    }
                 }
                 else
                 {
-                    oldHistory.WatchedDate = historyDTO.WatchedDate;
-                    oldHistory.SecondsCount = historyDTO.SecondsCount;
-                    await _movieContext.SaveChangesAsync();
-                    return Ok(oldHistory);
+                    return Unauthorized();
                 }
-                
+
+
             }
             catch (Exception)
             {
                 return BadRequest();
-            } 
+            }
         }
 
         [HttpDelete("delete-all/{userId}")]
         public async Task<IActionResult> DeleteAllHistory(int userId)
         {
-            //Xac thuc user
             try
             {
-                var userHistories = await _movieContext.Histories.Where(h => h.UserId == userId).ToListAsync();
-                if (userHistories.Count == 0)
+                var userIdInToken = tokenJwtServ.GetUserIdFromToken(HttpContext);
+                if (int.Parse(userIdInToken) == userId)
                 {
-                    return NotFound("Không tìm thấy lịch sử để xóa.");
+                    var userHistories = await _movieContext.Histories.Where(h => h.UserId == userId).ToListAsync();
+                    if (userHistories.Count == 0)
+                    {
+                        return NotFound("Không tìm thấy lịch sử để xóa.");
+                    }
+                    _movieContext.Histories.RemoveRange(userHistories);
+                    await _movieContext.SaveChangesAsync();
+                    return Ok();
                 }
-                _movieContext.Histories.RemoveRange(userHistories);
-                await _movieContext.SaveChangesAsync();
-                return Ok();
-            }catch(DbUpdateConcurrencyException)
+                else
+                {
+                    return Unauthorized();
+                }
+
+            }
+            catch (DbUpdateConcurrencyException)
             {
                 return BadRequest();
             }
@@ -130,14 +178,23 @@ namespace MovieAppApi.Controllers
         {
             try
             {
-                var historyToDelete = await _movieContext.Histories.Where(h => h.UserId == userId && h.Id == historyId).FirstOrDefaultAsync();
-                if (historyToDelete == null)
+                var userIdInToken = tokenJwtServ.GetUserIdFromToken(HttpContext);
+                if (int.Parse(userIdInToken) == userId)
                 {
-                    return NotFound("Không tìm thấy lịch sử để xóa.");
+                    var historyToDelete = await _movieContext.Histories.Where(h => h.UserId == userId && h.Id == historyId).FirstOrDefaultAsync();
+                    if (historyToDelete == null)
+                    {
+                        return NotFound("Không tìm thấy lịch sử để xóa.");
+                    }
+                    _movieContext.Histories.Remove(historyToDelete);
+                    await _movieContext.SaveChangesAsync();
+                    return Ok();
                 }
-                _movieContext.Histories.Remove(historyToDelete);
-                await _movieContext.SaveChangesAsync();
-                return Ok();
+                else
+                {
+                    return Unauthorized();
+                }
+
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -154,14 +211,23 @@ namespace MovieAppApi.Controllers
             }
             try
             {
-                var userHistories = await _movieContext.Histories.Where(w => historyIds.Contains(w.Id) && w.UserId == userId).ToListAsync();
-                if (userHistories.Count == 0)
+                var userIdInToken = tokenJwtServ.GetUserIdFromToken(HttpContext);
+                if (int.Parse(userIdInToken) == userId)
                 {
-                    return NotFound("Không tìm thấy danh sách để xóa.");
+                    var userHistories = await _movieContext.Histories.Where(w => historyIds.Contains(w.Id) && w.UserId == userId).ToListAsync();
+                    if (userHistories.Count == 0)
+                    {
+                        return NotFound("Không tìm thấy danh sách để xóa.");
+                    }
+                    _movieContext.Histories.RemoveRange(userHistories);
+                    await _movieContext.SaveChangesAsync();
+                    return Ok();
                 }
-                _movieContext.Histories.RemoveRange(userHistories);
-                await _movieContext.SaveChangesAsync();
-                return Ok();
+                else
+                {
+                    return Unauthorized();
+                }
+
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -174,17 +240,26 @@ namespace MovieAppApi.Controllers
         {
             try
             {
-                DateTime oneHourAgo = DateTime.UtcNow.AddHours(-1);
-                var userHistories = await _movieContext.Histories.Where(h => h.UserId == userId && h.WatchedDate >= oneHourAgo).ToListAsync();
-                if (userHistories.Count == 0)
+                var userIdInToken = tokenJwtServ.GetUserIdFromToken(HttpContext);
+                if (int.Parse(userIdInToken) == userId)
                 {
-                    return NotFound("Không tìm thấy lịch sử để xóa.");
+                    DateTime oneHourAgo = DateTime.UtcNow.AddHours(-1);
+                    var userHistories = await _movieContext.Histories.Where(h => h.UserId == userId && h.WatchedDate >= oneHourAgo).ToListAsync();
+                    if (userHistories.Count == 0)
+                    {
+                        return NotFound("Không tìm thấy lịch sử để xóa.");
+                    }
+                    _movieContext.Histories.RemoveRange(userHistories);
+                    await _movieContext.SaveChangesAsync();
+                    return Ok();
                 }
-                _movieContext.Histories.RemoveRange(userHistories);
-                await _movieContext.SaveChangesAsync();
-                return Ok();
+                else
+                {
+                    return Unauthorized();
+                }
+
             }
-            catch(DbUpdateConcurrencyException)
+            catch (DbUpdateConcurrencyException)
             {
                 return BadRequest();
             }
@@ -194,15 +269,24 @@ namespace MovieAppApi.Controllers
         {
             try
             {
-                DateTime oneDayAgo = DateTime.UtcNow.AddDays(-1);
-                var userHistories = await _movieContext.Histories.Where(h => h.UserId == userId && h.WatchedDate >= oneDayAgo).ToListAsync();
-                if (userHistories.Count == 0)
+                var userIdInToken = tokenJwtServ.GetUserIdFromToken(HttpContext);
+                if (int.Parse(userIdInToken) == userId)
                 {
-                    return NotFound("Không tìm thấy lịch sử để xóa.");
+                    DateTime oneDayAgo = DateTime.UtcNow.AddDays(-1);
+                    var userHistories = await _movieContext.Histories.Where(h => h.UserId == userId && h.WatchedDate >= oneDayAgo).ToListAsync();
+                    if (userHistories.Count == 0)
+                    {
+                        return NotFound("Không tìm thấy lịch sử để xóa.");
+                    }
+                    _movieContext.Histories.RemoveRange(userHistories);
+                    await _movieContext.SaveChangesAsync();
+                    return Ok();
                 }
-                _movieContext.Histories.RemoveRange(userHistories);
-                await _movieContext.SaveChangesAsync();
-                return Ok();
+                else
+                {
+                    return Unauthorized();
+                }
+
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -214,15 +298,24 @@ namespace MovieAppApi.Controllers
         {
             try
             {
-                DateTime oneWeekAgo = DateTime.UtcNow.AddDays(-7);
-                var userHistories = await _movieContext.Histories.Where(h => h.UserId == userId && h.WatchedDate >= oneWeekAgo).ToListAsync();
-                if (userHistories.Count == 0)
+                var userIdInToken = tokenJwtServ.GetUserIdFromToken(HttpContext);
+                if (int.Parse(userIdInToken) == userId)
                 {
-                    return NotFound("Không tìm thấy lịch sử để xóa.");
+                    DateTime oneWeekAgo = DateTime.UtcNow.AddDays(-7);
+                    var userHistories = await _movieContext.Histories.Where(h => h.UserId == userId && h.WatchedDate >= oneWeekAgo).ToListAsync();
+                    if (userHistories.Count == 0)
+                    {
+                        return NotFound("Không tìm thấy lịch sử để xóa.");
+                    }
+                    _movieContext.Histories.RemoveRange(userHistories);
+                    await _movieContext.SaveChangesAsync();
+                    return Ok();
                 }
-                _movieContext.Histories.RemoveRange(userHistories);
-                await _movieContext.SaveChangesAsync();
-                return Ok();
+                else
+                {
+                    return Unauthorized();
+                }
+
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -234,15 +327,24 @@ namespace MovieAppApi.Controllers
         {
             try
             {
-                DateTime oneMonthAgo = DateTime.UtcNow.AddMonths(-1);
-                var userHistories = await _movieContext.Histories.Where(h => h.UserId == userId && h.WatchedDate >= oneMonthAgo).ToListAsync();
-                if (userHistories.Count == 0)
+                var userIdInToken = tokenJwtServ.GetUserIdFromToken(HttpContext);
+                if (int.Parse(userIdInToken) == userId)
                 {
-                    return NotFound("Không tìm thấy lịch sử để xóa.");
+                    DateTime oneMonthAgo = DateTime.UtcNow.AddMonths(-1);
+                    var userHistories = await _movieContext.Histories.Where(h => h.UserId == userId && h.WatchedDate >= oneMonthAgo).ToListAsync();
+                    if (userHistories.Count == 0)
+                    {
+                        return NotFound("Không tìm thấy lịch sử để xóa.");
+                    }
+                    _movieContext.Histories.RemoveRange(userHistories);
+                    await _movieContext.SaveChangesAsync();
+                    return Ok();
                 }
-                _movieContext.Histories.RemoveRange(userHistories);
-                await _movieContext.SaveChangesAsync();
-                return Ok();
+                else
+                {
+                    return Unauthorized();
+                }
+
             }
             catch (DbUpdateConcurrencyException)
             {

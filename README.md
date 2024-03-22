@@ -7,6 +7,8 @@ Dự án api cho ứng dụng xem phim trên android
 - Download donet hosting bundle: https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-aspnetcore-8.0.3-windows-hosting-bundle-installer
 
 
+* Đối với các phương thức có [Authorize] cần gửi kèm trong header `Key: Authorization` và `Value: Bearer <token>`.
+
 ## API Reference
 
 ### Request login
@@ -35,7 +37,7 @@ Body JSON object
 
 
 
-### Request change password
+### Request change password [Authorize]
 ```
   POST /api/User/change-password
 ```
@@ -85,7 +87,7 @@ Body JSON object
 
 
 
-### Request get all histories
+### Request get all histories [Authorize]
 ```
   GET /api/History/all/{userId}
 ```
@@ -95,7 +97,7 @@ Body JSON object
 
 
 
-### Request get limit the newest histories
+### Request get limit the newest histories [Authorize]
 ```
   GET /api/History/{limit}/{userId}
 ```
@@ -106,7 +108,7 @@ Body JSON object
 
 
 
-### Request get limit skip-take the newest histories
+### Request get limit skip-take the newest histories [Authorize]
 ```
   GET /api/History/{skip}/{take}/{userId}
 ```
@@ -125,7 +127,7 @@ The server will respond to the latest history from 3 to 22 (skip record 1,2 and 
 
 
 
-### Request add new or update history
+### Request add new or update history [Authorize]
 ```
   GET /api/History/add
 ```
@@ -138,7 +140,7 @@ Body JSON object
 | `informationMovie`     | `string` | **Required** |
 
 
-### Request delete a history
+### Request delete a history [Authorize]
 ```
   DELETE /api/History/delete-one/{historyId}/{userId}
 ```
@@ -150,7 +152,7 @@ Body JSON object
 
 
 
-### Request delete many history
+### Request delete many history [Authorize]
 ```
   DELETE /api/History/delete-many/{userId}
 ```
@@ -163,7 +165,7 @@ Body JSON object
 
 
 
-### Request delete last hour history
+### Request delete last hour history [Authorize]
 ```
   DELETE /api/History/delete-last-hour/{userId}
 ```
@@ -173,7 +175,7 @@ Body JSON object
 
 
 
-### Request delete last day history
+### Request delete last day history [Authorize]
 ```
   DELETE /api/History/delete-last-day/{userId}
 ```
@@ -183,7 +185,7 @@ Body JSON object
 
 
 
-### Request delete last week history
+### Request delete last week history [Authorize]
 ```
   DELETE /api/History/delete-last-week/{userId}
 ```
@@ -193,7 +195,7 @@ Body JSON object
 
 
 
-### Request delete last month history
+### Request delete last month history [Authorize]
 ```
   DELETE /api/History/delete-last-month/{userId}
 ```
@@ -203,7 +205,7 @@ Body JSON object
 
 
 
-### Request delete all history
+### Request delete all history [Authorize]
 ```
   DELETE /api/History/delete-all/{userId}
 ```
@@ -213,7 +215,7 @@ Body JSON object
 
 
 
-### Request get all playlist
+### Request get all playlist [Authorize]
 ```
   GET /api/WatchList/all/{userId}
 ```
@@ -223,7 +225,7 @@ Body JSON object
 
 
 
-### Request add a new playlist
+### Request add a new playlist [Authorize]
 ```
   POST /api/WatchList/add
 ```
@@ -234,7 +236,7 @@ Body JSON object
 | `title`    | `string` | **Required**|
 
 
-### Request edit a new playlist
+### Request edit a new playlist [Authorize]
 ```
   POST /api/WatchList/edit/{watchListId}
 ```
@@ -252,38 +254,48 @@ Body JSON object
 
 
 
-### Request delte a playlist
+### Request delte a playlist [Authorize]
 ```
-  DELETE /api/WatchList/delete-one/{watchListId}
+  DELETE /api/WatchList/delete-one/{watchListId}/{userId}
 ```
 | Path parameters | Type     | Description                       |
 | :--------  | :------- | :-------------------------------- |
 | `watchListId`     | `int` | **Required** |
+| `userId`     | `int` | **Required** |
 
 
 
 
-### Request delete many playlist
+### Request delete many playlist [Authorize]
 ```
-  DELETE /api/WatchList/delete-many
+  DELETE /api/WatchList/delete-many/{userId}
 ```
+| Path parameters | Type     | Description                       |
+| :--------  | :------- | :-------------------------------- |
+| `userId`     | `int` | **Required** |
+
 * Body is a JSON array `playListIds` type `integer`
 + For example: `[1,2]`
 
 
-### Request get all playlist items
+### Request get all playlist items [Authorize]
 ```
-  GET /api/WatchListItem/all/{watchListId}
+  GET /api/WatchListItem/all/{watchListId}/{userId}
 ```
 | Path parameters | Type     | Description                       |
 | :--------  | :------- | :-------------------------------- |
 | `watchListId`     | `int` | **Required** |
+| `userId`     | `int` | **Required** |
 
 
-### Request add a new playlist item
+### Request add a new playlist item [Authorize]
 ```
-  POST /api/WatchListItem/add
+  POST /api/WatchListItem/add/{userId}
 ```
+| Path parameters | Type     | Description                       |
+| :--------  | :------- | :-------------------------------- |
+| `userId`     | `int` | **Required** |
+
 Body JSON object
 | Attributes | Type     | Description                       |
 | :--------  | :------- | :-------------------------------- |
@@ -291,10 +303,14 @@ Body JSON object
 | `informationMovie`    | `string` | **Required**|
 
 
-### Request check a movie is exist in playlist
+### Request check a movie is exist in playlist [Authorize]
 ```
-  GET /api/WatchListItem/check
+  GET /api/WatchListItem/check/{userId}
 ```
+| Path parameters | Type     | Description                       |
+| :--------  | :------- | :-------------------------------- |
+| `userId`     | `int` | **Required** |
+
 Body JSON object
 | Attributes | Type     | Description                       |
 | :--------  | :------- | :-------------------------------- |
@@ -304,21 +320,26 @@ Body JSON object
 
 
 
-### Request delte a playlist item
+### Request delete a playlist item [Authorize]
 ```
-  DELETE /api/WatchListItem/delete-one/{watchListItemId}
+  DELETE /api/WatchListItem/delete-one/{watchListItemId}/{userId}
 ```
 | Path parameters | Type     | Description                       |
 | :--------  | :------- | :-------------------------------- |
 | `watchListItemId`     | `int` | **Required** |
+| `userId`     | `int` | **Required** |
 
 
 
 
-### Request delete many playlist item
+### Request delete many playlist item [Authorize]
 ```
-  DELETE /api/WatchListItem/delete-many
+  DELETE /api/WatchListItem/delete-many/{userId}
 ```
+| Path parameters | Type     | Description                       |
+| :--------  | :------- | :-------------------------------- |
+| `userId`     | `int` | **Required** |
+
 * Body is a JSON array `playListItemIds` type `integer`
 + For example: `[1,2]`
 

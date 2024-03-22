@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -6,7 +6,6 @@ using MovieAppApi.Data;
 using MovieAppApi.DTO;
 using MovieAppApi.Models;
 using MovieAppApi.Service;
-using NuGet.Common;
 
 namespace MovieAppApi.Controllers
 {
@@ -17,12 +16,16 @@ namespace MovieAppApi.Controllers
         private MovieContext _movieContext;
         private BuildJSON buildJSON;
         private readonly IMemoryCache _cache;
+        private readonly IConfiguration _config;
+        private readonly TokenJwtService tokenJwtServ;
 
-        public UserController(MovieContext movieContext, IMemoryCache memoryCache)
+        public UserController(MovieContext movieContext, IMemoryCache cache, IConfiguration config)
         {
+            _config = config;
             _movieContext = movieContext;
-            this.buildJSON = new BuildJSON();
-            _cache = memoryCache;
+            _cache = cache;
+            buildJSON = new BuildJSON();
+            tokenJwtServ = new TokenJwtService();
         }
 
         [HttpPost("login")]
@@ -33,20 +36,23 @@ namespace MovieAppApi.Controllers
                 var user = await _movieContext.Users.FirstOrDefaultAsync(u => u.Email == loginDTO.Email);
                 if (user != null && loginDTO.Password.Equals(user.Password))
                 {
-                    return Ok(buildJSON.UserCheckLogin(user));
+                    var token = tokenJwtServ.GenerateJwtToken(user, _config);
+                    return Ok(buildJSON.UserCheckLogin(user, token));
                 }
-                return BadRequest("Not match");
-            }catch (Exception)
+                return Unauthorized("Not match");
+            }
+            catch (Exception e)
             {
-                return BadRequest();
-            }   
+                return BadRequest(e.Message);
+            }
         }
-
+        [Authorize]
         [HttpPost("change-password")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePassDTO changePassDTO)
         {
             try
             {
+
                 var user = await _movieContext.Users.FirstOrDefaultAsync(u => u.Email == changePassDTO.Email);
                 if (user == null)
                 {
@@ -62,9 +68,18 @@ namespace MovieAppApi.Controllers
                 }
                 else
                 {
-                    user.Password = changePassDTO.NewPassword;
-                    await _movieContext.SaveChangesAsync();
-                    return Ok();
+                    var userIdInToken = tokenJwtServ.GetUserIdFromToken(HttpContext);
+                    if (int.Parse(userIdInToken) == user.Id)
+                    {
+                        user.Password = changePassDTO.NewPassword;
+                        await _movieContext.SaveChangesAsync();
+                        return Ok();
+                    }
+                    else
+                    {
+                        return Unauthorized();
+                    }
+
                 }
             }
             catch (Exception)
@@ -82,9 +97,9 @@ namespace MovieAppApi.Controllers
                 if (existUser)
                 {
                     var code = _cache.Get<Code>(forgotDTO.Email);
-                    if(code != null)
+                    if (code != null)
                     {
-                        if(DateTimeOffset.UtcNow.AddMinutes(4) < code.DeadTime)
+                        if (DateTimeOffset.UtcNow.AddMinutes(4) < code.DeadTime)
                         {
                             return BadRequest("Too many request, please wait 1 minute since the last successful request");
                         }
@@ -93,10 +108,10 @@ namespace MovieAppApi.Controllers
                     _cache.Set(forgotDTO.Email, new Code(randomCode, DateTimeOffset.UtcNow.AddMinutes(5)), TimeSpan.FromMinutes(5));
                     await new PasswordResetService().SendPasswordResetEmail(forgotDTO.Email, randomCode);
                 }
-                var responseData = new{existUser = existUser};
+                var responseData = new { existUser = existUser };
                 return Ok(responseData);
             }
-            catch(Exception)
+            catch (Exception)
             {
                 return BadRequest();
             }
@@ -127,7 +142,7 @@ namespace MovieAppApi.Controllers
         {
             try
             {
-                if(forgotDTO.Password != forgotDTO.PasswordConfirm)
+                if (forgotDTO.Password != forgotDTO.PasswordConfirm)
                 {
                     return BadRequest("Password confirm is not the same password");
                 }

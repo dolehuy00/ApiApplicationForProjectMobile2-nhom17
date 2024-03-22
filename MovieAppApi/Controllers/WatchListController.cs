@@ -1,23 +1,27 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MovieAppApi.Data;
 using MovieAppApi.DTO;
 using MovieAppApi.Models;
+using MovieAppApi.Service;
 
 namespace MovieAppApi.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class WatchListController : ControllerBase
     {
         private MovieContext _movieContext;
         private BuildJSON buildJSON;
+        private readonly TokenJwtService tokenJwtServ;
 
         public WatchListController(MovieContext movieContext)
         {
             _movieContext = movieContext;
-            this.buildJSON = new BuildJSON();
+            buildJSON = new BuildJSON();
+            tokenJwtServ = new TokenJwtService();
         }
 
         [HttpGet("all/{userId}")]
@@ -25,15 +29,24 @@ namespace MovieAppApi.Controllers
         {
             try
             {
-                var allWatchLists = await _movieContext.WatchLists
-                .Where(h => h.UserId == userId)
-                .ToListAsync();
-                return Ok(buildJSON.WatchListAll(allWatchLists));
+                var userIdInToken = tokenJwtServ.GetUserIdFromToken(HttpContext);
+                if (int.Parse(userIdInToken) == userId)
+                {
+                    var allWatchLists = await _movieContext.WatchLists
+                                    .Where(h => h.UserId == userId)
+                                    .ToListAsync();
+                    return Ok(buildJSON.WatchListAll(allWatchLists));
+                }
+                else
+                {
+                    return Unauthorized();
+                }
+
             }
             catch (Exception)
             {
                 return BadRequest();
-            } 
+            }
         }
 
         [HttpPost("add")]
@@ -41,12 +54,21 @@ namespace MovieAppApi.Controllers
         {
             try
             {
-                var newWatchList = new WatchList();
-                newWatchList.UserId = watchListDTO.UserId;
-                newWatchList.Title = watchListDTO.Title;
-                await _movieContext.WatchLists.AddAsync(newWatchList);
-                await _movieContext.SaveChangesAsync();
-                return Ok(buildJSON.WatchListGet(newWatchList));
+                var userIdInToken = tokenJwtServ.GetUserIdFromToken(HttpContext);
+                if (int.Parse(userIdInToken) == watchListDTO.UserId)
+                {
+                    var newWatchList = new WatchList();
+                    newWatchList.UserId = watchListDTO.UserId;
+                    newWatchList.Title = watchListDTO.Title;
+                    await _movieContext.WatchLists.AddAsync(newWatchList);
+                    await _movieContext.SaveChangesAsync();
+                    return Ok(buildJSON.WatchListGet(newWatchList));
+                }
+                else
+                {
+                    return Unauthorized();
+                }
+
             }
             catch (Exception)
             {
@@ -59,18 +81,27 @@ namespace MovieAppApi.Controllers
         {
             try
             {
-                var oldWatchList = await _movieContext.WatchLists.FirstOrDefaultAsync(w => w.Id == watchListId);
-                if (oldWatchList == null)
+                var userIdInToken = tokenJwtServ.GetUserIdFromToken(HttpContext);
+                if (int.Parse(userIdInToken) == watchListDTO.UserId)
                 {
-                    return NotFound();
+                    var oldWatchList = await _movieContext.WatchLists.FirstOrDefaultAsync(w => w.Id == watchListId);
+                    if (oldWatchList == null)
+                    {
+                        return NotFound();
+                    }
+                    if (watchListId != watchListDTO.Id)
+                    {
+                        return BadRequest();
+                    }
+                    oldWatchList.Title = watchListDTO.Title;
+                    await _movieContext.SaveChangesAsync();
+                    return Ok();
                 }
-                if (watchListId != watchListDTO.Id)
+                else
                 {
-                    return BadRequest();
+                    return Unauthorized();
                 }
-                oldWatchList.Title = watchListDTO.Title;
-                await _movieContext.SaveChangesAsync();
-                return Ok();
+
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -78,27 +109,36 @@ namespace MovieAppApi.Controllers
             }
         }
 
-        [HttpDelete("delete-one/{watchListId}")]
-        public async Task<IActionResult> DeleteAWatchList(int watchListId)
+        [HttpDelete("delete-one/{watchListId}/{userId}")]
+        public async Task<IActionResult> DeleteAWatchList(int watchListId, int userId)
         {
             try
             {
-                var watchListToDelete = await _movieContext.WatchLists.Where(w => w.Id == watchListId).FirstOrDefaultAsync();
-                if (watchListToDelete == null)
+                var userIdInToken = tokenJwtServ.GetUserIdFromToken(HttpContext);
+                if (int.Parse(userIdInToken) == userId)
                 {
-                    return NotFound("Không tìm thấy danh sách để xóa.");
+                    var watchListToDelete = await _movieContext.WatchLists.Where(w => w.Id == watchListId).FirstOrDefaultAsync();
+                    if (watchListToDelete == null)
+                    {
+                        return NotFound("Không tìm thấy danh sách để xóa.");
+                    }
+                    _movieContext.WatchLists.Remove(watchListToDelete);
+                    await _movieContext.SaveChangesAsync();
+                    return Ok();
                 }
-                _movieContext.WatchLists.Remove(watchListToDelete);
-                await _movieContext.SaveChangesAsync();
-                return Ok();
+                else
+                {
+                    return Unauthorized();
+                }
+
             }
             catch (DbUpdateConcurrencyException)
             {
                 return BadRequest();
             }
         }
-        [HttpDelete("delete-many")]
-        public async Task<IActionResult> DeleteManyWatchLists([FromBody] int[] watchListIds)
+        [HttpDelete("delete-many/{userId}")]
+        public async Task<IActionResult> DeleteManyWatchLists([FromBody] int[] watchListIds, int userId)
         {
             if (watchListIds == null || watchListIds.Length == 0)
             {
@@ -106,14 +146,23 @@ namespace MovieAppApi.Controllers
             }
             try
             {
-                var userWatchLists = await _movieContext.WatchLists.Where(w => watchListIds.Contains(w.Id)).ToListAsync();
-                if (userWatchLists.Count == 0)
+                var userIdInToken = tokenJwtServ.GetUserIdFromToken(HttpContext);
+                if (int.Parse(userIdInToken) == userId)
                 {
-                    return NotFound("Không tìm thấy danh sách để xóa.");
+                    var userWatchLists = await _movieContext.WatchLists.Where(w => watchListIds.Contains(w.Id)).ToListAsync();
+                    if (userWatchLists.Count == 0)
+                    {
+                        return NotFound("Không tìm thấy danh sách để xóa.");
+                    }
+                    _movieContext.WatchLists.RemoveRange(userWatchLists);
+                    await _movieContext.SaveChangesAsync();
+                    return Ok();
                 }
-                _movieContext.WatchLists.RemoveRange(userWatchLists);
-                await _movieContext.SaveChangesAsync();
-                return Ok();
+                else
+                {
+                    return Unauthorized();
+                }
+
             }
             catch (DbUpdateConcurrencyException)
             {

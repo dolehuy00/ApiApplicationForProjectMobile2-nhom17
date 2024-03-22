@@ -1,8 +1,4 @@
-﻿
-
-using System.ComponentModel.DataAnnotations;
-
-namespace MovieAppApi.DTO
+﻿namespace MovieAppApi.DTO
 {
     public class LoginDTO
     {

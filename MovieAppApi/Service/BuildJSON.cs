@@ -1,28 +1,30 @@
-﻿using MovieAppApi.Models;
+﻿using MovieAppApi.DTO;
+using MovieAppApi.Models;
 
-namespace MovieAppApi.DTO
+namespace MovieAppApi.Service
 {
     public class BuildJSON
     {
-        public dynamic UserCheckLogin(User user)
+        public dynamic UserCheckLogin(User user, string token)
         {
             return new
             {
-                Id = user.Id,
-                Name = user.Name,
-                Email = user.Email,
-                Avatar = user.Avatar,
+                user.Id,
+                token,
+                user.Name,
+                user.Email,
+                user.Avatar,
             };
         }
-        public dynamic WatchListAll(ICollection<WatchList> watchLists) 
+        public dynamic WatchListAll(ICollection<WatchList> watchLists)
         {
             var watchListDTOs = watchLists
                 .Select(source => new
                 {
-                    Id = source.Id,
-                    UserId = source.UserId,
-                    Title = source.Title,
-                
+                    source.Id,
+                    source.UserId,
+                    source.Title,
+
                 })
                 .ToList();
             return watchListDTOs;
@@ -31,9 +33,9 @@ namespace MovieAppApi.DTO
         {
             return new
             {
-                Id = watchList.Id,
-                UserId = watchList.UserId,
-                Title = watchList.Title
+                watchList.Id,
+                watchList.UserId,
+                watchList.Title
             };
         }
 
@@ -52,9 +54,9 @@ namespace MovieAppApi.DTO
         {
             return new
             {
-                Id = watchListItem.Id,
-                WatchListId = watchListItem.WatchListId,
-                InformationMovie = watchListItem.InformationMovie
+                watchListItem.Id,
+                watchListItem.WatchListId,
+                watchListItem.InformationMovie
             };
         }
     }

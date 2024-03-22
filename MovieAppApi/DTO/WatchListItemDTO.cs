@@ -1,6 +1,4 @@
-﻿using MovieAppApi.Models;
-
-namespace MovieAppApi.DTO
+﻿namespace MovieAppApi.DTO
 {
     public class WatchListItemDTO
     {

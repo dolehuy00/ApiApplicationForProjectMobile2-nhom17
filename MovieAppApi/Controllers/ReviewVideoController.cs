@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MovieAppApi.Data;
 using MovieAppApi.DTO;
 using MovieAppApi.Models;
+using MovieAppApi.Service;
 
 namespace MovieAppApi.Controllers
 {
