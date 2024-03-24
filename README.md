@@ -37,6 +37,19 @@ Body JSON object
 
 
 
+### Request change information [Authorize]
+```
+  POST /api/User/change-info
+```
+Body JSON object
+| Attributes | Type     | Description                       |
+| :--------  | :------- | :-------------------------------- |
+| `email`    | `string` | **Required** |
+| `avatar` | `string` | **Optional** |
+| `name`     | `string` | **Optional** |
+
+
+
 ### Request change password [Authorize]
 ```
   POST /api/User/change-password
@@ -48,7 +61,6 @@ Body JSON object
 | `email`    | `string` | **Required** |
 | `newPassword` | `string` | **Required** |
 | `passwordconfirm`     | `string` | **Required** |
-
 
 
 ### Request forgot password
@@ -224,6 +236,28 @@ Body JSON object
 | `userId`     | `int` | **Required** |
 
 
+### Request get limit playlist [Authorize]
+```
+  GET /api/WatchList/{limit}/{userId}
+```
+| Path parameters | Type     | Description                       |
+| :--------  | :------- | :-------------------------------- |
+| `limit`     | `int` | **Required** |
+| `userId`     | `int` | **Required** |
+
+
+
+### Request get limit skip-take playlist [Authorize]
+```
+  GET /api/WatchList/{skip}/{take}/{userId}
+```
+| Path parameters | Type     | Description                       |
+| :--------  | :------- | :-------------------------------- |
+| `skip`     | `int` | **Required** |
+| `take`     | `int` | **Required** |
+| `userId`     | `int` | **Required** |
+
+
 
 ### Request add a new playlist [Authorize]
 ```
@@ -282,10 +316,35 @@ Body JSON object
 ```
   GET /api/WatchListItem/all/{watchListId}/{userId}
 ```
-| Path parameters | Type     | Description                       |
+| Path parameters | Type     | Description                  |
 | :--------  | :------- | :-------------------------------- |
 | `watchListId`     | `int` | **Required** |
 | `userId`     | `int` | **Required** |
+
+
+### Request get limit playlist items [Authorize]
+```
+  GET /api/WatchListItem/{limit}/{watchListId}/{userId}
+```
+| Path parameters | Type     | Description                  |
+| :--------  | :------- | :-------------------------------- |
+| `limit`     | `int` | **Required** |
+| `userId`     | `int` | **Required** |
+| `watchListId`     | `int` | **Required** |
+
+
+
+### Request get limit skip-take playlist items [Authorize]
+```
+  GET /api/WatchListItem/{skip}/{take}/{watchListId}/{userId}
+```
+| Path parameters | Type     | Description                  |
+| :--------  | :------- | :-------------------------------- |
+| `skip`     | `int` | **Required** |
+| `take`     | `int` | **Required** |
+| `userId`     | `int` | **Required** |
+| `watchListId`     | `int` | **Required** |
+
 
 
 ### Request add a new playlist item [Authorize]

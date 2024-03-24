@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\PC\\Desktop\\AndroidNangCao\\Mobile2\\MovieAppApi\\MovieAppApi.csproj": {}
+    "C:\\Users\\PC\\Desktop\\AndroidNangCao\\Mobile2InLocal\\Mobile2-nhom17\\MovieAppApi\\MovieAppApi.csproj": {}
   },
   "projects": {
-    "C:\\Users\\PC\\Desktop\\AndroidNangCao\\Mobile2\\MovieAppApi\\MovieAppApi.csproj": {
+    "C:\\Users\\PC\\Desktop\\AndroidNangCao\\Mobile2InLocal\\Mobile2-nhom17\\MovieAppApi\\MovieAppApi.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\PC\\Desktop\\AndroidNangCao\\Mobile2\\MovieAppApi\\MovieAppApi.csproj",
+        "projectUniqueName": "C:\\Users\\PC\\Desktop\\AndroidNangCao\\Mobile2InLocal\\Mobile2-nhom17\\MovieAppApi\\MovieAppApi.csproj",
         "projectName": "MovieAppApi",
-        "projectPath": "C:\\Users\\PC\\Desktop\\AndroidNangCao\\Mobile2\\MovieAppApi\\MovieAppApi.csproj",
+        "projectPath": "C:\\Users\\PC\\Desktop\\AndroidNangCao\\Mobile2InLocal\\Mobile2-nhom17\\MovieAppApi\\MovieAppApi.csproj",
         "packagesPath": "C:\\Users\\PC\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\PC\\Desktop\\AndroidNangCao\\Mobile2\\MovieAppApi\\obj\\",
+        "outputPath": "C:\\Users\\PC\\Desktop\\AndroidNangCao\\Mobile2InLocal\\Mobile2-nhom17\\MovieAppApi\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -39,11 +39,6 @@
           "warnAsError": [
             "NU1605"
           ]
-        },
-        "restoreAuditProperties": {
-          "enableAudit": "true",
-          "auditLevel": "low",
-          "auditMode": "direct"
         }
       },
       "frameworks": {
@@ -101,19 +96,19 @@
           "downloadDependencies": [
             {
               "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[6.0.27, 6.0.27]"
+              "version": "[6.0.25, 6.0.25]"
             },
             {
               "name": "Microsoft.NETCore.App.Host.win-x64",
-              "version": "[6.0.27, 6.0.27]"
+              "version": "[6.0.25, 6.0.25]"
             },
             {
               "name": "Microsoft.NETCore.App.Ref",
-              "version": "[6.0.27, 6.0.27]"
+              "version": "[6.0.25, 6.0.25]"
             },
             {
               "name": "Microsoft.WindowsDesktop.App.Ref",
-              "version": "[6.0.27, 6.0.27]"
+              "version": "[6.0.25, 6.0.25]"
             }
           ],
           "frameworkReferences": {
@@ -124,7 +119,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.201\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.404\\RuntimeIdentifierGraph.json"
         }
       }
     }

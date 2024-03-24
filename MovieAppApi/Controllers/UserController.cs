@@ -88,6 +88,48 @@ namespace MovieAppApi.Controllers
             }
         }
 
+        [Authorize]
+        [HttpPost("change-info")]
+        public async Task<IActionResult> ChangeAvatar([FromBody] ChangeInfoDTO changeInfoDTO)
+        {
+            try
+            {
+
+                var user = await _movieContext.Users.FirstOrDefaultAsync(u => u.Email == changeInfoDTO.Email);
+                if (user == null)
+                {
+                    return NotFound("This account is'nt exist!");
+                }
+                else
+                {
+                    var userIdInToken = tokenJwtServ.GetUserIdFromToken(HttpContext);
+                    if (int.Parse(userIdInToken) == user.Id)
+                    {
+                        if (changeInfoDTO.Avatar != null)
+                        {
+                            user.Avatar = changeInfoDTO.Avatar;
+                        }
+                        if (changeInfoDTO.Name != null)
+                        {
+                            user.Name = changeInfoDTO.Name;
+                        }
+                        await _movieContext.SaveChangesAsync();
+                        return Ok(buildJSON.UserCheckLogin(user, ""));
+                    }
+                    else
+                    {
+                        return Unauthorized();
+                    }
+
+                }
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+        }
+
+
         [HttpPost("forgot-password-request")]
         public async Task<IActionResult> ForgotPasswordRequest([FromBody] ForgotDTO forgotDTO)
         {

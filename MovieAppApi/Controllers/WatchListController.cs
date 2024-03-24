@@ -49,6 +49,60 @@ namespace MovieAppApi.Controllers
             }
         }
 
+        [HttpGet("{limit}/{userId}")]
+        public async Task<IActionResult> GetLimitWatchLists(int userId, int limit)
+        {
+            try
+            {
+                var userIdInToken = tokenJwtServ.GetUserIdFromToken(HttpContext);
+                if (int.Parse(userIdInToken) == userId)
+                {
+                    var allWatchLists = await _movieContext.WatchLists
+                                    .Where(h => h.UserId == userId)
+                                    .Take(limit)
+                                    .ToListAsync();
+                    return Ok(buildJSON.WatchListAll(allWatchLists));
+                }
+                else
+                {
+                    return Unauthorized();
+                }
+
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpGet("{skip}/{take}/{userId}")]
+        public async Task<IActionResult> GetLimitWatchLists(int userId, int skip, int take)
+        {
+            try
+            {
+                var userIdInToken = tokenJwtServ.GetUserIdFromToken(HttpContext);
+                if (int.Parse(userIdInToken) == userId)
+                {
+                    var allWatchLists = await _movieContext.WatchLists
+                                    .Where(h => h.UserId == userId)
+                                    .Skip(skip)
+                                    .Take(take)
+                                    .ToListAsync();
+                    return Ok(buildJSON.WatchListAll(allWatchLists));
+                }
+                else
+                {
+                    return Unauthorized();
+                }
+
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+        }
+
+
         [HttpPost("add")]
         public async Task<IActionResult> AddNew(WatchListDTO watchListDTO)
         {

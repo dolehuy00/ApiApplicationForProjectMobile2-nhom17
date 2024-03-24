@@ -49,6 +49,60 @@ namespace MovieAppApi.Controllers
             }
         }
 
+        [HttpGet("{limit}/{watchListId}/{userId}")]
+        public async Task<IActionResult> GetLimitWatchListItems(int watchListId, int userId, int limit)
+        {
+            try
+            {
+                var userIdInToken = tokenJwtServ.GetUserIdFromToken(HttpContext);
+                if (int.Parse(userIdInToken) == userId)
+                {
+                    var allWatchListItems = await _movieContext.WatchListItems
+                                        .Where(w => w.WatchListId == watchListId)
+                                        .Take(limit)
+                                        .ToListAsync();
+                    return Ok(buildJSON.WatchListItemAll(allWatchListItems));
+                }
+                else
+                {
+                    return Unauthorized();
+                }
+
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpGet("{skip}/{take}/{watchListId}/{userId}")]
+        public async Task<IActionResult> GetLimitWatchListItems(int watchListId, int userId, int skip, int take)
+        {
+            try
+            {
+                var userIdInToken = tokenJwtServ.GetUserIdFromToken(HttpContext);
+                if (int.Parse(userIdInToken) == userId)
+                {
+                    var allWatchListItems = await _movieContext.WatchListItems
+                                        .Where(w => w.WatchListId == watchListId)
+                                        .Skip(skip)
+                                        .Take(take)
+                                        .ToListAsync();
+                    return Ok(buildJSON.WatchListItemAll(allWatchListItems));
+                }
+                else
+                {
+                    return Unauthorized();
+                }
+
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+        }
+
+
         [HttpPost("add/{userId}")]
         public async Task<IActionResult> AddNew([FromBody] WatchListItemDTO watchListItemDTO, int userId)
         {
