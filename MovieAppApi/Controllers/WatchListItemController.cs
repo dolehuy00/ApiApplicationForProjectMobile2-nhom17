@@ -15,6 +15,7 @@ namespace MovieAppApi.Controllers
     {
         private MovieContext _movieContext;
         private BuildJSON buildJSON;
+        private InformationMovieBO _informationMovieBO;
         private readonly TokenJwtService tokenJwtServ;
 
         public WatchListItemController(MovieContext movieContext)
@@ -22,6 +23,7 @@ namespace MovieAppApi.Controllers
             _movieContext = movieContext;
             buildJSON = new BuildJSON();
             tokenJwtServ = new TokenJwtService();
+            _informationMovieBO = new InformationMovieBO(movieContext);
         }
 
         [HttpGet("all/{watchListId}/{userId}")]
@@ -33,19 +35,19 @@ namespace MovieAppApi.Controllers
                 if (int.Parse(userIdInToken) == userId)
                 {
                     var allWatchListItems = await _movieContext.WatchListItems
-                                        .Where(w => w.WatchListId == watchListId)
-                                        .ToListAsync();
+                            .Where(w => w.WatchListId == watchListId)
+                            .Include(w => w.InformationMovie)
+                            .ToListAsync();
                     return Ok(buildJSON.WatchListItemAll(allWatchListItems));
                 }
                 else
                 {
                     return Unauthorized();
                 }
-
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
         }
 
@@ -58,9 +60,10 @@ namespace MovieAppApi.Controllers
                 if (int.Parse(userIdInToken) == userId)
                 {
                     var allWatchListItems = await _movieContext.WatchListItems
-                                        .Where(w => w.WatchListId == watchListId)
-                                        .Take(limit)
-                                        .ToListAsync();
+                            .Where(w => w.WatchListId == watchListId)
+                            .Include(w => w.InformationMovie)
+                            .Take(limit)
+                            .ToListAsync();
                     return Ok(buildJSON.WatchListItemAll(allWatchListItems));
                 }
                 else
@@ -84,10 +87,11 @@ namespace MovieAppApi.Controllers
                 if (int.Parse(userIdInToken) == userId)
                 {
                     var allWatchListItems = await _movieContext.WatchListItems
-                                        .Where(w => w.WatchListId == watchListId)
-                                        .Skip(skip)
-                                        .Take(take)
-                                        .ToListAsync();
+                            .Where(w => w.WatchListId == watchListId)
+                            .Include(w => w.InformationMovie)
+                            .Skip(skip)
+                            .Take(take)
+                            .ToListAsync();
                     return Ok(buildJSON.WatchListItemAll(allWatchListItems));
                 }
                 else
@@ -112,15 +116,24 @@ namespace MovieAppApi.Controllers
                 if (int.Parse(userIdInToken) == userId)
                 {
                     var oldWatchListItem = await _movieContext.WatchListItems
-                                        .Where(w => w.WatchListId == watchListItemDTO.WatchListId && w.InformationMovie == watchListItemDTO.InformationMovie)
-                                        .FirstOrDefaultAsync();
+                            .Where(w => w.WatchListId == watchListItemDTO.WatchListId
+                                && w.InformationMovie.MovieId == watchListItemDTO.InformationMovie.MovieId)
+                            .FirstOrDefaultAsync();
                     if (oldWatchListItem != null)
                     {
                         return BadRequest("Item is exist in playlist");
                     }
+
+                    InformationMovie newInformationMovie = new InformationMovie();
+                    newInformationMovie.Title = watchListItemDTO.InformationMovie.Title;
+                    newInformationMovie.MovieId = watchListItemDTO.InformationMovie.MovieId;
+                    newInformationMovie.ImageLink = watchListItemDTO.InformationMovie.ImageLink;
+                    newInformationMovie.Tag = watchListItemDTO.InformationMovie.Tag;
+
                     var newWatchListItem = new WatchListItem();
                     newWatchListItem.WatchListId = watchListItemDTO.WatchListId;
-                    newWatchListItem.InformationMovie = watchListItemDTO.InformationMovie;
+                    newWatchListItem.InformationMovie = await _informationMovieBO.AddOrUpdateInformationMovie(newInformationMovie);
+
                     await _movieContext.WatchListItems.AddAsync(newWatchListItem);
                     await _movieContext.SaveChangesAsync();
                     return Ok(buildJSON.WatchListItemGet(newWatchListItem));
@@ -147,8 +160,10 @@ namespace MovieAppApi.Controllers
                 if (int.Parse(userIdInToken) == userId)
                 {
                     var allWatchLists = await _movieContext.WatchListItems
-                                        .Where(w => w.WatchListId == watchListItemDTO.WatchListId && w.InformationMovie == watchListItemDTO.InformationMovie)
-                                        .FirstOrDefaultAsync();
+                                .Where(w => w.WatchListId == watchListItemDTO.WatchListId
+                                    && w.InformationMovie.MovieId == watchListItemDTO.InformationMovie.MovieId
+                                    && w.InformationMovie.Tag == watchListItemDTO.InformationMovie.Tag)
+                                .FirstOrDefaultAsync();
                     return Ok(new
                     {
                         isExist = allWatchLists != null
@@ -167,30 +182,6 @@ namespace MovieAppApi.Controllers
         }
 
 
-        //[HttpPut("edit/{watchListItemId}")]
-        //public async Task<IActionResult> Update(int watchListItemId, [FromBody] WatchListItemDTO watchListItemDTO)
-        //{
-        //    try
-        //    {
-        //        var oldWatchListItem = await _movieContext.WatchListItems.FirstOrDefaultAsync(w => w.Id == watchListItemId);
-        //        if (oldWatchListItem == null)
-        //        {
-        //            return NotFound();
-        //        }
-        //        if (watchListItemId != watchListItemDTO.Id)
-        //        {
-        //            return BadRequest();
-        //        }
-        //        oldWatchListItem.WatchListId = watchListItemDTO.WatchListId;
-        //        await _movieContext.SaveChangesAsync();
-        //        return Ok();
-        //    }
-        //    catch (DbUpdateConcurrencyException)
-        //    {
-        //        return BadRequest();
-        //    }
-        //}
-
         [HttpDelete("delete-one/{watchListItemId}/{userId}")]
         public async Task<IActionResult> DeleteAWatchListItem(int watchListItemId, int userId)
         {
@@ -199,7 +190,9 @@ namespace MovieAppApi.Controllers
                 var userIdInToken = tokenJwtServ.GetUserIdFromToken(HttpContext);
                 if (int.Parse(userIdInToken) == userId)
                 {
-                    var watchListItemToDelete = await _movieContext.WatchListItems.Where(w => w.Id == watchListItemId).FirstOrDefaultAsync();
+                    var watchListItemToDelete = await _movieContext.WatchListItems
+                        .Where(w => w.Id == watchListItemId)
+                        .FirstOrDefaultAsync();
                     if (watchListItemToDelete == null)
                     {
                         return NotFound("Không tìm thấy mục để xóa.");
@@ -232,7 +225,9 @@ namespace MovieAppApi.Controllers
                     {
                         return BadRequest("Danh sách id trống.");
                     }
-                    var userWatchLists = await _movieContext.WatchListItems.Where(w => watchListItemIds.Contains(w.Id)).ToListAsync();
+                    var userWatchLists = await _movieContext.WatchListItems
+                        .Where(w => watchListItemIds.Contains(w.Id))
+                        .ToListAsync();
                     if (userWatchLists.Count == 0)
                     {
                         return NotFound("Không tìm thấy mục để xóa.");

@@ -11,6 +11,8 @@ Dự án api cho ứng dụng xem phim trên android
 
 ## API Reference
 
+## User
+
 ### Request login
 ```
   POST /api/User/login
@@ -98,6 +100,7 @@ Body JSON object
 | `passwordConfirm`     | `string` | **Required** |
 
 
+## History
 
 ### Request get all histories [Authorize]
 ```
@@ -149,7 +152,15 @@ Body JSON object
 | `userId`     | `int` | **Required** |
 | `watchedDate`    | `DateTime` | **Required**. ISO 8601 format (dd/MM/yyyyThh:mm:ss). UTC datetime|
 | `secondsCount` | `int` | **Required** |
-| `informationMovie`     | `string` | **Required** |
+| `informationMovie`     | `informationMovie` | **Required** |
+
+`informationMovie` type
+| Attributes | Type     | Description                       |
+| :--------  | :------- | :-------------------------------- |
+| `movieId`     | `string` | **Required** |
+| `title`    | `string` | **Required**|
+| `imageLink` | `string` | **Required** |
+| `tag` | `string` | **Required** (`YOUTUBE` or `TMDB`) |
 
 
 ### Request delete a history [Authorize]
@@ -226,6 +237,11 @@ Body JSON object
 | `userId`     | `int` | **Required** |
 
 
+
+
+
+
+## Playlist
 
 ### Request get all playlist [Authorize]
 ```
@@ -311,6 +327,7 @@ Body JSON object
 * Body is a JSON array `playListIds` type `integer`
 + For example: `[1,2]`
 
+## Playlist Item
 
 ### Request get all playlist items [Authorize]
 ```
@@ -359,7 +376,16 @@ Body JSON object
 | Attributes | Type     | Description                       |
 | :--------  | :------- | :-------------------------------- |
 | `watchListId`     | `int` | **Required** |
-| `informationMovie`    | `string` | **Required**|
+| `informationMovie`     | `informationMovie` | **Required** |
+
+`informationMovie` type
+| Attributes | Type     | Description                       |
+| :--------  | :------- | :-------------------------------- |
+| `movieId`     | `string` | **Required** |
+| `title`    | `string` | **Required**|
+| `imageLink` | `string` | **Required** |
+| `tag` | `string` | **Required** (`YOUTUBE` or `TMDB`) |
+
 
 
 ### Request check a movie is exist in playlist [Authorize]
@@ -374,7 +400,15 @@ Body JSON object
 | Attributes | Type     | Description                       |
 | :--------  | :------- | :-------------------------------- |
 | `watchListId`     | `int` | **Required** |
-| `informationMovie`    | `string` | **Required**|
+| `informationMovie`     | `informationMovie` | **Required** |
+
+`informationMovie` type
+| Attributes | Type     | Description                       |
+| :--------  | :------- | :-------------------------------- |
+| `movieId`     | `string` | **Required** |
+| `title`    | `string` | **Required**|
+| `imageLink` | `string` | **Required** |
+| `tag` | `string` | **Required** (`YOUTUBE` or `TMDB`) |
 
 
 
@@ -403,14 +437,39 @@ Body JSON object
 + For example: `[1,2]`
 
 
+## Review Video
+
 
 ### Request get all review video
 ```
-  GET /api/ReviewVideo/all/{informationMovie}
+  GET /api/ReviewVideo/all/{movieId}
 ```
 | Path parameters | Type     | Description                       |
 | :--------  | :------- | :-------------------------------- |
-| `informationMovie`     | `string` | **Required** |
+| `movieId`     | `string` | **Required** |
+
+
+
+### Request get limit review video
+```
+  GET /api/ReviewVideo/{limit}/{movieId}
+```
+| Path parameters | Type     | Description                       |
+| :--------  | :------- | :-------------------------------- |
+| `limit`     | `int` | **Required** |
+| `movieId`     | `int` | **Required** |
+
+
+
+### Request get limit skip-take review video
+```
+  GET /api/ReviewVideo/{skip}/{take}/{movieId}
+```
+| Path parameters | Type     | Description                       |
+| :--------  | :------- | :-------------------------------- |
+| `skip`     | `int` | **Required** |
+| `take`     | `int` | **Required** |
+| `movieId`  | `int` | **Required** |
 
 
 ### Request add a new review video
@@ -420,9 +479,16 @@ Body JSON object
 Body JSON object
 | Attributes | Type     | Description                       |
 | :--------  | :------- | :-------------------------------- |
-| `informationReviewVideo`     | `string` | **Required** |
-| `informationMovie`    | `string` | **Required**|
+| `movieId`    | `string` | **Required**. Id của film muốn add video review|
+| `informationReviewVideo`     | `informationReviewVideo` | **Required** |
 
+`informationReviewVideo` type
+| Attributes | Type     | Description                       |
+| :--------  | :------- | :-------------------------------- |
+| `movieId`     | `string` | **Required**. Là id của video review|
+| `title`    | `string` | **Required**|
+| `imageLink` | `string` | **Required** |
+| `tag` | `string` | **Required** (`YOUTUBE`) |
 
 
 ### Request delte a review video
@@ -432,3 +498,11 @@ Body JSON object
 | Path parameters | Type     | Description                       |
 | :--------  | :------- | :-------------------------------- |
 | `reviewVideoId`     | `int` | **Required** |
+
+
+### Request delete many review video
+```
+  DELETE /api/ReviewVideo/delete-many
+```
+* Body is a JSON array `reviewVideoIds` type `integer`
++ For example: `[1,2]`

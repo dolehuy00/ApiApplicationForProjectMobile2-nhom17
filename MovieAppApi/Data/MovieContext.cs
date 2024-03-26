@@ -14,7 +14,7 @@ namespace MovieAppApi.Data
         public DbSet<History> Histories { get; set; }
         public DbSet<WatchListItem> WatchListItems { get; set; }
         public DbSet<ReviewVideo> ReviewVideos { get; set; }
-
+        public DbSet<InformationMovie> InformationMovies { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>().ToTable("Users");
@@ -22,6 +22,25 @@ namespace MovieAppApi.Data
             modelBuilder.Entity<History>().ToTable("History");
             modelBuilder.Entity<WatchListItem>().ToTable("WatchListItem");
             modelBuilder.Entity<ReviewVideo>().ToTable("ReviewVideo");
+            modelBuilder.Entity<InformationMovie>().ToTable("InformationMovie");
+
+            modelBuilder.Entity<InformationMovie>()
+                .HasOne(im => im.History)
+                .WithOne(h => h.InformationMovie)
+                .HasForeignKey<History>(h => h.InformationMovieId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<InformationMovie>()
+                .HasOne(im => im.ReviewVideo)
+                .WithOne(r => r.InformationReviewVideo)
+                .HasForeignKey<ReviewVideo>(r => r.InformationReviewVideoId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<InformationMovie>()
+                .HasOne(im => im.WatchListItem)
+                .WithOne(h => h.InformationMovie)
+                .HasForeignKey<WatchListItem>(h => h.InformationMovieId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
