@@ -46,6 +46,45 @@ namespace MovieAppApi.Controllers
                 return BadRequest(e.Message);
             }
         }
+
+        //[HttpPost("login-google")]
+        //public async Task<IActionResult> CheckLoginWithGoogle()
+        //{
+        //    try
+        //    {
+        //        var user = await _movieContext.Users.FirstOrDefaultAsync(u => u.Email == loginDTO.Email);
+        //        if (user != null && loginDTO.Password.Equals(user.Password))
+        //        {
+        //            var token = tokenJwtServ.GenerateJwtToken(user, _config);
+        //            return Ok(buildJSON.UserCheckLogin(user, token));
+        //        }
+        //        return Unauthorized("Not match");
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        return BadRequest(e.Message);
+        //    }
+        //}
+
+        //[HttpPost("login-facebook")]
+        //public async Task<IActionResult> CheckLoginWithFacebook()
+        //{
+        //    try
+        //    {
+        //        var user = await _movieContext.Users.FirstOrDefaultAsync(u => u.Email == loginDTO.Email);
+        //        if (user != null && loginDTO.Password.Equals(user.Password))
+        //        {
+        //            var token = tokenJwtServ.GenerateJwtToken(user, _config);
+        //            return Ok(buildJSON.UserCheckLogin(user, token));
+        //        }
+        //        return Unauthorized("Not match");
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        return BadRequest(e.Message);
+        //    }
+        //}
+
         [Authorize]
         [HttpPost("change-password")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePassDTO changePassDTO)

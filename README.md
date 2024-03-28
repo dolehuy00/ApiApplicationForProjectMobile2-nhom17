@@ -161,6 +161,7 @@ Body JSON object
 | `title`    | `string` | **Required**|
 | `imageLink` | `string` | **Required** |
 | `tag` | `string` | **Required** (`YOUTUBE` or `TMDB`) |
+| `durations` | `int` | **Required** |
 
 
 ### Request delete a history [Authorize]
@@ -385,6 +386,7 @@ Body JSON object
 | `title`    | `string` | **Required**|
 | `imageLink` | `string` | **Required** |
 | `tag` | `string` | **Required** (`YOUTUBE` or `TMDB`) |
+| `durations` | `int` | **Required** |
 
 
 
@@ -409,6 +411,7 @@ Body JSON object
 | `title`    | `string` | **Required**|
 | `imageLink` | `string` | **Required** |
 | `tag` | `string` | **Required** (`YOUTUBE` or `TMDB`) |
+| `durations` | `int` | **Required** |
 
 
 

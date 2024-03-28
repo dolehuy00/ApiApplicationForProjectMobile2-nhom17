@@ -5,7 +5,7 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
 <Project>
   <PropertyGroup>
     <_PublishTargetUrl>C:\Users\PC\Desktop\AndroidNangCao\Mobile2InLocal\Mobile2-nhom17\MovieAppApi\bin\Release\net6.0\publish\</_PublishTargetUrl>
-    <History>True|2024-03-24T16:17:21.6192475Z;True|2024-03-24T16:45:25.0997528+07:00;</History>
+    <History>True|2024-03-28T02:07:30.1108061Z;True|2024-03-27T23:59:22.4482902+07:00;True|2024-03-27T23:57:57.4690919+07:00;True|2024-03-27T23:49:46.5034052+07:00;True|2024-03-27T11:47:44.2870367+07:00;True|2024-03-24T23:17:21.6192475+07:00;True|2024-03-24T16:45:25.0997528+07:00;</History>
     <LastFailureDetails />
   </PropertyGroup>
 </Project>
