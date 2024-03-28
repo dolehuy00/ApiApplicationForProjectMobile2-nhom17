@@ -123,15 +123,14 @@ namespace MovieAppApi.Controllers
                         && h.UserId == historyDTO.UserId)
                         .Include(h => h.InformationMovie)
                         .FirstOrDefaultAsync();
+                    InformationMovie newInformationMovie = new InformationMovie();
+                    newInformationMovie.Title = historyDTO.InformationMovie.Title;
+                    newInformationMovie.MovieId = historyDTO.InformationMovie.MovieId;
+                    newInformationMovie.ImageLink = historyDTO.InformationMovie.ImageLink;
+                    newInformationMovie.Tag = historyDTO.InformationMovie.Tag;
+                    newInformationMovie.Durations = historyDTO.InformationMovie.Durations;
                     if (oldHistory == null)
                     {
-                        InformationMovie newInformationMovie = new InformationMovie();
-                        newInformationMovie.Title = historyDTO.InformationMovie.Title;
-                        newInformationMovie.MovieId = historyDTO.InformationMovie.MovieId;
-                        newInformationMovie.ImageLink = historyDTO.InformationMovie.ImageLink;
-                        newInformationMovie.Tag = historyDTO.InformationMovie.Tag;
-                        newInformationMovie.Durations = historyDTO.InformationMovie.Durations;
-
                         var newHistory = new History();
                         newHistory.UserId = historyDTO.UserId;
                         newHistory.WatchedDate = historyDTO.WatchedDate;
@@ -144,6 +143,12 @@ namespace MovieAppApi.Controllers
                     }
                     else
                     {
+                        if (oldHistory.InformationMovie.Title != newInformationMovie.Title ||
+                           oldHistory.InformationMovie.Durations != newInformationMovie.Durations ||
+                           oldHistory.InformationMovie.ImageLink != newInformationMovie.ImageLink)
+                        {
+                            oldHistory.InformationMovie = await _informationMovieBO.AddOrUpdateInformationMovie(newInformationMovie);
+                        }
                         oldHistory.WatchedDate = historyDTO.WatchedDate;
                         oldHistory.SecondsCount = historyDTO.SecondsCount;
                         await _movieContext.SaveChangesAsync();

@@ -686,5 +686,4 @@ C:\Users\PC\Desktop\AndroidNangCao\Mobile2InLocal\Mobile2-nhom17\MovieAppApi\obj
 C:\Users\PC\Desktop\AndroidNangCao\Mobile2InLocal\Mobile2-nhom17\MovieAppApi\obj\Debug\net6.0\MovieAppApi.pdb
 C:\Users\PC\Desktop\AndroidNangCao\Mobile2InLocal\Mobile2-nhom17\MovieAppApi\obj\Debug\net6.0\MovieAppApi.genruntimeconfig.cache
 C:\Users\PC\Desktop\AndroidNangCao\Mobile2InLocal\Mobile2-nhom17\MovieAppApi\obj\Debug\net6.0\ref\MovieAppApi.dll
-C:\Users\PC\Desktop\AndroidNangCao\Mobile2InLocal\Mobile2-nhom17\MovieAppApi\obj\Debug\net6.0\MovieAppApi.sourcelink.json
-C:\Users\PC\Desktop\AndroidNangCao\Mobile2InLocal\Mobile2-nhom17\MovieAppApi\obj\Debug\net6.0\MovieApp.24D1CB59.Up2Date
+C:\Users\PC\Desktop\AndroidNangCao\Mobile2InLocal\Mobile2-nhom17\MovieAppApi\obj\Debug\net6.0\MovieAppApi.csproj.CopyComplete
