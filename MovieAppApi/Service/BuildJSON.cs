@@ -117,7 +117,8 @@ namespace MovieAppApi.Service
                 informationMovie.MovieId,
                 informationMovie.Title,
                 informationMovie.Tag,
-                informationMovie.ImageLink
+                informationMovie.ImageLink,
+                informationMovie.Durations
             };
         }
 
