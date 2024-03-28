@@ -7,5 +7,6 @@
         public string Title { get; set; } = null!;
         public string ImageLink { get; set; } = null!;
         public string Tag { get; set; } = null!;
+        public int Durations { get; set; }
     }
 }

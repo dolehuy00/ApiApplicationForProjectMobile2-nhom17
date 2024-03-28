@@ -129,6 +129,7 @@ namespace MovieAppApi.Controllers
                     newInformationMovie.MovieId = watchListItemDTO.InformationMovie.MovieId;
                     newInformationMovie.ImageLink = watchListItemDTO.InformationMovie.ImageLink;
                     newInformationMovie.Tag = watchListItemDTO.InformationMovie.Tag;
+                    newInformationMovie.Durations = watchListItemDTO.InformationMovie.Durations;
 
                     var newWatchListItem = new WatchListItem();
                     newWatchListItem.WatchListId = watchListItemDTO.WatchListId;

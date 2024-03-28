@@ -119,7 +119,9 @@ namespace MovieAppApi.Controllers
                 if (int.Parse(userIdInToken) == historyDTO.UserId)
                 {
                     var oldHistory = await _movieContext.Histories
-                        .Where(h => h.InformationMovie.MovieId == historyDTO.InformationMovie.MovieId)
+                        .Where(h => h.InformationMovie.MovieId == historyDTO.InformationMovie.MovieId
+                        && h.UserId == historyDTO.UserId)
+                        .Include(h => h.InformationMovie)
                         .FirstOrDefaultAsync();
                     if (oldHistory == null)
                     {
@@ -128,6 +130,7 @@ namespace MovieAppApi.Controllers
                         newInformationMovie.MovieId = historyDTO.InformationMovie.MovieId;
                         newInformationMovie.ImageLink = historyDTO.InformationMovie.ImageLink;
                         newInformationMovie.Tag = historyDTO.InformationMovie.Tag;
+                        newInformationMovie.Durations = historyDTO.InformationMovie.Durations;
 
                         var newHistory = new History();
                         newHistory.UserId = historyDTO.UserId;
@@ -154,7 +157,7 @@ namespace MovieAppApi.Controllers
             }
             catch (Exception e)
             {
-                return BadRequest(e);
+                return BadRequest(e.Message);
             }
         }
 

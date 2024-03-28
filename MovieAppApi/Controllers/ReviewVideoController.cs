@@ -93,6 +93,7 @@ namespace MovieAppApi.Controllers
                     newInformationReviewVideo.MovieId = reviewVideoDTO.InformationReviewVideo.MovieId;
                     newInformationReviewVideo.ImageLink = reviewVideoDTO.InformationReviewVideo.ImageLink;
                     newInformationReviewVideo.Tag = reviewVideoDTO.InformationReviewVideo.Tag;
+                    newInformationReviewVideo.Durations = reviewVideoDTO.InformationReviewVideo.Durations;
 
                     var newItem = new ReviewVideo();
                     newItem.MovieId = reviewVideoDTO.MovieId;
