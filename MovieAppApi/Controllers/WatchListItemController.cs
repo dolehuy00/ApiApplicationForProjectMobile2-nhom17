@@ -16,6 +16,7 @@ namespace MovieAppApi.Controllers
         private MovieContext _movieContext;
         private BuildJSON buildJSON;
         private InformationMovieBO _informationMovieBO;
+        private WatchListBO _watchListBO;
         private readonly TokenJwtService tokenJwtServ;
 
         public WatchListItemController(MovieContext movieContext)
@@ -24,6 +25,7 @@ namespace MovieAppApi.Controllers
             buildJSON = new BuildJSON();
             tokenJwtServ = new TokenJwtService();
             _informationMovieBO = new InformationMovieBO(movieContext);
+            _watchListBO = new WatchListBO(movieContext);
         }
 
         [HttpGet("all/{watchListId}/{userId}")]
@@ -137,6 +139,7 @@ namespace MovieAppApi.Controllers
 
                     await _movieContext.WatchListItems.AddAsync(newWatchListItem);
                     await _movieContext.SaveChangesAsync();
+                    await _watchListBO.PlustOneItemCount(newWatchListItem.WatchListId);
                     return Ok(buildJSON.WatchListItemGet(newWatchListItem));
                 }
                 else
@@ -200,7 +203,8 @@ namespace MovieAppApi.Controllers
                     }
                     _movieContext.WatchListItems.Remove(watchListItemToDelete);
                     await _movieContext.SaveChangesAsync();
-                    return Ok();
+                    await _watchListBO.MinusItemCount(watchListItemToDelete.WatchListId, 1);
+                    return Ok(new { success = true });
                 }
                 else
                 {
@@ -235,7 +239,8 @@ namespace MovieAppApi.Controllers
                     }
                     _movieContext.WatchListItems.RemoveRange(userWatchLists);
                     await _movieContext.SaveChangesAsync();
-                    return Ok();
+                    await _watchListBO.MinusItemCount(userWatchLists.First().WatchListId, watchListItemIds.Length);
+                    return Ok(new { success = true });
                 }
                 else
                 {

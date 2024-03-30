@@ -22,6 +22,7 @@ namespace MovieAppApi.Service
 
 
 
+
         //
         // WatchList
         //
@@ -33,6 +34,7 @@ namespace MovieAppApi.Service
                     source.Id,
                     source.UserId,
                     source.Title,
+                    source.ItemCount
 
                 })
                 .ToList();
@@ -44,7 +46,8 @@ namespace MovieAppApi.Service
             {
                 watchList.Id,
                 watchList.UserId,
-                watchList.Title
+                watchList.Title,
+                watchList.ItemCount
             };
         }
 
