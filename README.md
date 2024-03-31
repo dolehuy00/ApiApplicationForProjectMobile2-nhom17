@@ -160,7 +160,7 @@ Body JSON object
 | `movieId`     | `string` | **Required** |
 | `title`    | `string` | **Required**|
 | `imageLink` | `string` | **Required** |
-| `tag` | `string` | **Required** (`YOUTUBE` or `TMDB`) |
+| `tag` | `string` | **Required** (`YOUTUBE` or `TMDB_MOVIE` or `TMDB_TV_SERIES`) |
 | `durations` | `int` | **Required** |
 
 
@@ -385,7 +385,7 @@ Body JSON object
 | `movieId`     | `string` | **Required** |
 | `title`    | `string` | **Required**|
 | `imageLink` | `string` | **Required** |
-| `tag` | `string` | **Required** (`YOUTUBE` or `TMDB`) |
+| `tag` | `string` | **Required** (`YOUTUBE` or `TMDB_MOVIE` or `TMDB_TV_SERIES`) |
 | `durations` | `int` | **Required** |
 
 
@@ -410,7 +410,7 @@ Body JSON object
 | `movieId`     | `string` | **Required** |
 | `title`    | `string` | **Required**|
 | `imageLink` | `string` | **Required** |
-| `tag` | `string` | **Required** (`YOUTUBE` or `TMDB`) |
+| `tag` | `string` | **Required** (`YOUTUBE` or `TMDB_MOVIE` or `TMDB_TV_SERIES`) |
 | `durations` | `int` | **Required** |
 
 
