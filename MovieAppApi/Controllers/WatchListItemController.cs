@@ -119,6 +119,7 @@ namespace MovieAppApi.Controllers
                 {
                     var oldWatchListItem = await _movieContext.WatchListItems
                             .Where(w => w.WatchListId == watchListItemDTO.WatchListId
+                                && w.InformationMovie.Tag == watchListItemDTO.InformationMovie.Tag
                                 && w.InformationMovie.MovieId == watchListItemDTO.InformationMovie.MovieId)
                             .FirstOrDefaultAsync();
                     if (oldWatchListItem != null)

@@ -120,7 +120,8 @@ namespace MovieAppApi.Controllers
                 {
                     var oldHistory = await _movieContext.Histories
                         .Where(h => h.InformationMovie.MovieId == historyDTO.InformationMovie.MovieId
-                        && h.UserId == historyDTO.UserId)
+                            && h.InformationMovie.Tag == historyDTO.InformationMovie.Tag
+                            && h.UserId == historyDTO.UserId)
                         .Include(h => h.InformationMovie)
                         .FirstOrDefaultAsync();
                     InformationMovie newInformationMovie = new InformationMovie();
