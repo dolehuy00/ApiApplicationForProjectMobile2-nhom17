@@ -33,7 +33,9 @@ namespace MovieAppApi.Controllers
         {
             try
             {
-                var user = await _movieContext.Users.FirstOrDefaultAsync(u => u.Email == loginDTO.Email);
+                var user = await _movieContext.Users
+                    .FirstOrDefaultAsync(u => u.Email == loginDTO.Email &&
+                                              u.TagSocialNetwork == null);
                 if (user != null && loginDTO.Password.Equals(user.Password))
                 {
                     var token = tokenJwtServ.GenerateJwtToken(user, _config);
@@ -47,43 +49,97 @@ namespace MovieAppApi.Controllers
             }
         }
 
-        //[HttpPost("login-google")]
-        //public async Task<IActionResult> CheckLoginWithGoogle()
-        //{
-        //    try
-        //    {
-        //        var user = await _movieContext.Users.FirstOrDefaultAsync(u => u.Email == loginDTO.Email);
-        //        if (user != null && loginDTO.Password.Equals(user.Password))
-        //        {
-        //            var token = tokenJwtServ.GenerateJwtToken(user, _config);
-        //            return Ok(buildJSON.UserCheckLogin(user, token));
-        //        }
-        //        return Unauthorized("Not match");
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        return BadRequest(e.Message);
-        //    }
-        //}
+        [HttpPost("login-google")]
+        public async Task<IActionResult> CheckLoginWithGoogle([FromBody] string googleToken)
+        {
+            try
+            {
+                GoogleTokenInfo? googleTokenInfo = TokenJwtService.AcceptGoogleToken(googleToken, _config);
+                if (googleTokenInfo != null)
+                {
+                    var user = await _movieContext.Users
+                        .FirstOrDefaultAsync(u => u.SubUserId == googleTokenInfo.Email &&
+                                                  u.TagSocialNetwork == "GOOGLE");
+                    if (user != null)
+                    {
+                        user.Avatar = googleTokenInfo.Picture;
+                        user.Name = googleTokenInfo.Name;
+                        await _movieContext.SaveChangesAsync();
+                        var token = tokenJwtServ.GenerateJwtToken(user, _config);
+                        return Ok(buildJSON.UserCheckLogin(user, token));
+                    }
+                    else
+                    {
+                        User newUser = new User();
+                        newUser.Name = googleTokenInfo.Name;
+                        newUser.Email = googleTokenInfo.Email;
+                        newUser.Password = RandomStringGenerator.GenerateRandomString(30);
+                        newUser.Avatar = googleTokenInfo.Picture;
+                        newUser.SubUserId = googleTokenInfo.Email;
+                        newUser.TagSocialNetwork = "GOOGLE";
+                        _movieContext.Users.Add(newUser);
+                        await _movieContext.SaveChangesAsync();
+                        var token = tokenJwtServ.GenerateJwtToken(newUser, _config);
+                        return Ok(buildJSON.UserCheckLogin(newUser, token));
+                    }
+                }
+                else
+                {
+                    return Unauthorized("Can't signin");
+                }
 
-        //[HttpPost("login-facebook")]
-        //public async Task<IActionResult> CheckLoginWithFacebook()
-        //{
-        //    try
-        //    {
-        //        var user = await _movieContext.Users.FirstOrDefaultAsync(u => u.Email == loginDTO.Email);
-        //        if (user != null && loginDTO.Password.Equals(user.Password))
-        //        {
-        //            var token = tokenJwtServ.GenerateJwtToken(user, _config);
-        //            return Ok(buildJSON.UserCheckLogin(user, token));
-        //        }
-        //        return Unauthorized("Not match");
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        return BadRequest(e.Message);
-        //    }
-        //}
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message + "\n" + e.StackTrace + "\n \n" + e.InnerException);
+            }
+        }
+
+        [HttpPost("login-facebook")]
+        public async Task<IActionResult> CheckLoginWithFacebook([FromBody] string firebaseToken)
+        {
+            try
+            {
+                FirebaseUserTokenInfo? userTokenInfo = await TokenJwtService.AcceptFirebaseAuthenFacebookToken(firebaseToken);
+                if (userTokenInfo != null)
+                {
+                    var user = await _movieContext.Users
+                        .FirstOrDefaultAsync(u => u.SubUserId == userTokenInfo.FirebaseUserId &&
+                                                  u.TagSocialNetwork == "FACEBOOK");
+                    if (user != null)
+                    {
+                        user.Avatar = userTokenInfo.Picture;
+                        user.Name = userTokenInfo.Name;
+                        user.SubUserId = userTokenInfo.FirebaseUserId;
+                        await _movieContext.SaveChangesAsync();
+                        var token = tokenJwtServ.GenerateJwtToken(user, _config);
+                        return Ok(buildJSON.UserCheckLogin(user, token));
+                    }
+                    else
+                    {
+                        User newUser = new User();
+                        newUser.Name = userTokenInfo.Name;
+                        newUser.Avatar = userTokenInfo.Picture;
+                        newUser.Email = userTokenInfo.FirebaseUserId;
+                        newUser.Password = RandomStringGenerator.GenerateRandomString(30);
+                        newUser.SubUserId = userTokenInfo.FirebaseUserId;
+                        newUser.TagSocialNetwork = "FACEBOOK";
+                        _movieContext.Users.Add(newUser);
+                        await _movieContext.SaveChangesAsync();
+                        var token = tokenJwtServ.GenerateJwtToken(newUser, _config);
+                        return Ok(buildJSON.UserCheckLogin(newUser, token));
+                    }
+                }
+                else
+                {
+                    return Unauthorized("Can't signin");
+                }
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message + "\n" + e.StackTrace + "\n \n" + e.InnerException);
+            }
+        }
 
         [Authorize]
         [HttpPost("change-password")]
@@ -92,7 +148,9 @@ namespace MovieAppApi.Controllers
             try
             {
 
-                var user = await _movieContext.Users.FirstOrDefaultAsync(u => u.Email == changePassDTO.Email);
+                var user = await _movieContext.Users
+                    .FirstOrDefaultAsync(u => u.Email == changePassDTO.Email &&
+                                              u.TagSocialNetwork == null);
                 if (user == null)
                 {
                     return NotFound("This account is'nt exist!");
@@ -134,7 +192,9 @@ namespace MovieAppApi.Controllers
             try
             {
 
-                var user = await _movieContext.Users.FirstOrDefaultAsync(u => u.Email == changeInfoDTO.Email);
+                var user = await _movieContext.Users
+                    .FirstOrDefaultAsync(u => u.Email == changeInfoDTO.Email &&
+                                              u.TagSocialNetwork == null);
                 if (user == null)
                 {
                     return NotFound("This account is'nt exist!");
@@ -174,7 +234,8 @@ namespace MovieAppApi.Controllers
         {
             try
             {
-                var existUser = await _movieContext.Users.Where(u => u.Email == forgotDTO.Email).FirstOrDefaultAsync() != null;
+                var existUser = await _movieContext.Users
+                    .Where(u => u.Email == forgotDTO.Email && u.TagSocialNetwork == null).FirstOrDefaultAsync() != null;
                 if (existUser)
                 {
                     var code = _cache.Get<Code>(forgotDTO.Email);
@@ -227,7 +288,8 @@ namespace MovieAppApi.Controllers
                 {
                     return BadRequest("Password confirm is not the same password");
                 }
-                var user = await _movieContext.Users.Where(u => u.Email == forgotDTO.Email).FirstOrDefaultAsync();
+                var user = await _movieContext.Users
+                    .Where(u => u.Email == forgotDTO.Email && u.TagSocialNetwork == null).FirstOrDefaultAsync();
                 var code = _cache.Get<Code>(forgotDTO.Email);
                 var changeSuccess = false;
                 if (user != null && code != null && code.CodeNumber.Equals(forgotDTO.Code))
@@ -252,10 +314,19 @@ namespace MovieAppApi.Controllers
         {
             try
             {
-                var user = await _movieContext.Users.FirstOrDefaultAsync(u => u.Email == userDTO.Email);
+                var user = await _movieContext.Users
+                    .FirstOrDefaultAsync(u => u.Email == userDTO.Email && u.TagSocialNetwork == null);
                 if (user != null)
                 {
                     return BadRequest("This email is already in use by another account!");
+                }
+                else if (userDTO.Email.Length < 4)
+                {
+                    return BadRequest("Invalid email!");
+                }
+                else if (userDTO.Password.Length < 6)
+                {
+                    return BadRequest("Password not long!");
                 }
                 else if (userDTO.Password != userDTO.PasswordConfirm)
                 {

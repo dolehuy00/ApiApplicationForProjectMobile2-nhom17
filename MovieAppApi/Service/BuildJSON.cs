@@ -10,14 +10,29 @@ namespace MovieAppApi.Service
         //
         public dynamic UserCheckLogin(User user, string token)
         {
-            return new
+            if (user.TagSocialNetwork == "FACEBOOK")
             {
-                user.Id,
-                token,
-                user.Name,
-                user.Email,
-                user.Avatar,
-            };
+                return new
+                {
+                    user.Id,
+                    token,
+                    user.Name,
+                    user.Avatar,
+                    user.TagSocialNetwork
+                };
+            }
+            else
+            {
+                return new
+                {
+                    user.Id,
+                    token,
+                    user.Name,
+                    user.Email,
+                    user.Avatar,
+                    user.TagSocialNetwork
+                };
+            }
         }
 
 

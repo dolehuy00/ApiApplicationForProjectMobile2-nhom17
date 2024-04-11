@@ -1,4 +1,9 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using FirebaseAdmin;
+using FirebaseAdmin.Auth;
+using Google.Apis.Auth;
+using Google.Apis.Auth.OAuth2;
+using Microsoft.IdentityModel.Tokens;
+using MovieAppApi.DTO;
 using MovieAppApi.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -56,5 +61,62 @@ namespace MovieAppApi.Service
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
+        public static GoogleTokenInfo? AcceptGoogleToken(string idToken, IConfiguration _config)
+        {
+            try
+            {
+                GoogleJsonWebSignature.ValidationSettings settings = new GoogleJsonWebSignature.ValidationSettings
+                {
+                    Audience = new[] { _config["GoogleToken:Audience"] }
+                };
+                GoogleJsonWebSignature.Payload payload = GoogleJsonWebSignature.ValidateAsync(idToken, settings).Result;
+
+                GoogleTokenInfo tokenInfo = new GoogleTokenInfo();
+                tokenInfo.Name = payload.Name;
+                tokenInfo.Email = payload.Email;
+                tokenInfo.Picture = payload.Picture;
+                return tokenInfo;
+            }
+            catch (InvalidJwtException ex)
+            {
+                Console.WriteLine("ID token không hợp lệ: " + ex.Message);
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Lỗi khi xác minh ID token: " + ex.Message);
+                return null;
+            }
+        }
+
+        public static async Task<FirebaseUserTokenInfo?> AcceptFirebaseAuthenFacebookToken(string idToken)
+        {
+            try
+            {
+                FirebaseApp.Create(new AppOptions()
+                {
+                    Credential = GoogleCredential.FromFile("Properties/firebase-adminsdk.json"),
+                });
+                FirebaseToken decodedToken = await FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(idToken);
+
+                FirebaseUserTokenInfo tokenInfo = new FirebaseUserTokenInfo();
+                tokenInfo.Name = (string)decodedToken.Claims["name"];
+                tokenInfo.Picture = (string)decodedToken.Claims["picture"];
+                tokenInfo.FirebaseUserId = (string)decodedToken.Claims["user_id"];
+                return tokenInfo;
+            }
+            catch (FirebaseAuthException ex)
+            {
+                Console.WriteLine("ID token không hợp lệ: " + ex.Message);
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Lỗi khi xác minh ID token: " + ex.Message);
+                return null;
+            }
+        }
     }
 }
+
