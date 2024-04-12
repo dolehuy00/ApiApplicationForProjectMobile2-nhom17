@@ -173,7 +173,8 @@ Ex:
         "movieId": "455575",
         "title": "Wong Fei Hong vs Kungfu Panda",
         "tag": "TMDB_MOVIE",
-        "imageLink": "https://image.tmdb.org/t/p/w500/mZEx58GIKIFXzYVy9txEgObKA8X.jpg"
+        "imageLink": "https://image.tmdb.org/t/p/w500/mZEx58GIKIFXzYVy9txEgObKA8X.jpg",
+        "durations": 0
     }
 }
 ```
@@ -338,7 +339,8 @@ Ex:
             "movieId": "455575",
             "title": "Wong Fei Hong vs Kungfu Panda 1",
             "tag": "TMDB_MOVIE",
-            "imageLink": "https://image.tmdb.org/t/p/w500/mZEx58GIKIFXzYVy9txEgObKA8X.jpg"
+            "imageLink": "https://image.tmdb.org/t/p/w500/mZEx58GIKIFXzYVy9txEgObKA8X.jpg",
+            "durations": 0
         }
     }
 }
