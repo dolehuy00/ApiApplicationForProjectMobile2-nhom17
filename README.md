@@ -544,16 +544,16 @@ Body JSON object
 | Attributes | Type     | Description                       |
 | :--------  | :------- | :-------------------------------- |
 | `movieId`    | `string` | **Required**. Id của film muốn add video review|
-| `informationReviewVideo`     | `informationReviewVideo` | **Required** |
+| `informationReviewVideo`     | `informationMovie` | **Required** |
 
-`informationReviewVideo` type
+`informationMovie` type
 | Attributes | Type     | Description                       |
 | :--------  | :------- | :-------------------------------- |
 | `movieId`     | `string` | **Required**. Là id của video review|
 | `title`    | `string` | **Required**|
 | `imageLink` | `string` | **Required** |
 | `tag` | `string` | **Required** (`YOUTUBE`) |
-
+| `durations` | `int` | **Required** |
 
 ### Request delte a review video
 ```
