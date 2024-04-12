@@ -163,6 +163,21 @@ Body JSON object
 | `tag` | `string` | **Required** (`YOUTUBE` or `TMDB_MOVIE` or `TMDB_TV_SERIES`) |
 | `durations` | `int` | **Required** |
 
+Ex:
+```json
+{
+    "userId": 1,
+    "watchedDate": "2024-03-29T19:13:29", 
+    "secondsCount": 20,
+    "informationMovie": {
+        "movieId": "455575",
+        "title": "Wong Fei Hong vs Kungfu Panda",
+        "tag": "TMDB_MOVIE",
+        "imageLink": "https://image.tmdb.org/t/p/w500/mZEx58GIKIFXzYVy9txEgObKA8X.jpg"
+    }
+}
+```
+
 
 ### Request delete a history [Authorize]
 ```
@@ -287,7 +302,51 @@ Body JSON object
 | `title`    | `string` | **Required**|
 
 
-### Request edit a new playlist [Authorize]
+### Request add a new playlist with one item [Authorize]
+```
+  POST /api/WatchList/add-to-new-watchlist
+```
+Body JSON object
+| Attributes | Type     | Description                       |
+| :--------  | :------- | :-------------------------------- |
+| `userId`     | `int` | **Required** |
+| `title`    | `string` | **Required**|
+| `item`    | `watchListItem` | **Required**|
+
+`watchListItem` type
+| Attributes | Type     | Description                       |
+| :--------  | :------- | :-------------------------------- |
+| `informationMovie`     | `informationMovie` | **Required** |
+
+`informationMovie` type
+| Attributes | Type     | Description                       |
+| :--------  | :------- | :-------------------------------- |
+| `movieId`     | `string` | **Required** |
+| `title`    | `string` | **Required**|
+| `imageLink` | `string` | **Required** |
+| `tag` | `string` | **Required** (`YOUTUBE` or `TMDB_MOVIE` or `TMDB_TV_SERIES`) |
+| `durations` | `int` | **Required** |
+
+Ex: 
+
+```json
+{
+    "userId": 1,
+    "Title": "Playlist 10",
+    "item":{
+        "informationMovie": {
+            "movieId": "455575",
+            "title": "Wong Fei Hong vs Kungfu Panda 1",
+            "tag": "TMDB_MOVIE",
+            "imageLink": "https://image.tmdb.org/t/p/w500/mZEx58GIKIFXzYVy9txEgObKA8X.jpg"
+        }
+    }
+}
+```
+
+
+
+### Request edit a playlist [Authorize]
 ```
   POST /api/WatchList/edit/{watchListId}
 ```
