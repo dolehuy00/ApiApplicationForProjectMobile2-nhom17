@@ -16,12 +16,14 @@ namespace MovieAppApi.Controllers
         private MovieContext _movieContext;
         private BuildJSON buildJSON;
         private readonly TokenJwtService tokenJwtServ;
+        private InformationMovieBO _informationMovieBO;
 
         public WatchListController(MovieContext movieContext)
         {
             _movieContext = movieContext;
             buildJSON = new BuildJSON();
             tokenJwtServ = new TokenJwtService();
+            _informationMovieBO = new InformationMovieBO(movieContext);
         }
 
         [HttpGet("all/{userId}")]
@@ -127,6 +129,51 @@ namespace MovieAppApi.Controllers
             catch (Exception)
             {
                 return BadRequest();
+            }
+        }
+
+        [HttpPost("add-to-new-watchlist")]
+        public async Task<IActionResult> AddToNewWatchlist(WatchListDTO watchListDTO)
+        {
+            try
+            {
+                var userIdInToken = tokenJwtServ.GetUserIdFromToken(HttpContext);
+                if (int.Parse(userIdInToken) == watchListDTO.UserId)
+                {
+                    var newWatchList = new WatchList();
+                    newWatchList.UserId = watchListDTO.UserId;
+                    newWatchList.Title = watchListDTO.Title;
+                    newWatchList.ItemCount = 1;
+                    await _movieContext.WatchLists.AddAsync(newWatchList);
+                    await _movieContext.SaveChangesAsync();
+                    if (watchListDTO.item != null)
+                    {
+                        InformationMovie newInformationMovie = new InformationMovie();
+                        newInformationMovie.Title = watchListDTO.item.InformationMovie.Title;
+                        newInformationMovie.MovieId = watchListDTO.item.InformationMovie.MovieId;
+                        newInformationMovie.ImageLink = watchListDTO.item.InformationMovie.ImageLink;
+                        newInformationMovie.Tag = watchListDTO.item.InformationMovie.Tag;
+                        newInformationMovie.Durations = watchListDTO.item.InformationMovie.Durations;
+
+                        var newWatchListItem = new WatchListItem();
+                        newWatchListItem.WatchListId = newWatchList.Id;
+                        newWatchListItem.InformationMovie = await _informationMovieBO.AddOrUpdateInformationMovie(newInformationMovie);
+
+                        await _movieContext.WatchListItems.AddAsync(newWatchListItem);
+                        await _movieContext.SaveChangesAsync();
+                    }
+
+                    return Ok(buildJSON.WatchListGet(newWatchList));
+                }
+                else
+                {
+                    return Unauthorized();
+                }
+
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message + "\n" + e.StackTrace);
             }
         }
 
