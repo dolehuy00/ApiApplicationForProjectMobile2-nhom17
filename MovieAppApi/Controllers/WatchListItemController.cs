@@ -198,10 +198,7 @@ namespace MovieAppApi.Controllers
                                 .Where(w => w.InformationMovie.MovieId == informationMovieDTO.MovieId
                                     && w.InformationMovie.Tag == informationMovieDTO.Tag).ToListAsync();
                     var inWatchList = allWatchLists.Select(w => w.WatchListId).ToArray();
-                    return Ok(new
-                    {
-                        inWatchList
-                    });
+                    return Ok(inWatchList);
                 }
                 else
                 {
