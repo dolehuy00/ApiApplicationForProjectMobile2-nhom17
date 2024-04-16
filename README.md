@@ -475,6 +475,24 @@ Body JSON object
 | `durations` | `int` | **Required** |
 
 
+### Request check a movie is exist in all playlist [Authorize]
+```
+  GET /api/WatchListItem/check-all/{userId}
+```
+| Path parameters | Type     | Description                       |
+| :--------  | :------- | :-------------------------------- |
+| `userId`     | `int` | **Required** |
+
+Body JSON object
+`informationMovie` type
+| Attributes | Type     | Description                       |
+| :--------  | :------- | :-------------------------------- |
+| `movieId`     | `string` | **Required** |
+| `title`    | `string` | **Required**|
+| `imageLink` | `string` | **Optional** |
+| `tag` | `string` | **Required** (`YOUTUBE` or `TMDB_MOVIE` or `TMDB_TV_SERIES`) |
+| `durations` | `int` | **Optional** |
+
 
 
 ### Request delete a playlist item [Authorize]

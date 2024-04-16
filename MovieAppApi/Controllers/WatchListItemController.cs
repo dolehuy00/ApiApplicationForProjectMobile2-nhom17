@@ -186,6 +186,36 @@ namespace MovieAppApi.Controllers
             }
         }
 
+        [HttpGet("check-all/{userId}")]
+        public async Task<IActionResult> CheckExistInAllWatchList([FromBody] InformationMovieDTO informationMovieDTO, int userId)
+        {
+            try
+            {
+                var userIdInToken = tokenJwtServ.GetUserIdFromToken(HttpContext);
+                if (int.Parse(userIdInToken) == userId)
+                {
+                    var allWatchLists = await _movieContext.WatchListItems
+                                .Where(w => w.InformationMovie.MovieId == informationMovieDTO.MovieId
+                                    && w.InformationMovie.Tag == informationMovieDTO.Tag).ToListAsync();
+                    var inWatchList = allWatchLists.Select(w => w.WatchListId).ToArray();
+                    return Ok(new
+                    {
+                        inWatchList
+                    });
+                }
+                else
+                {
+                    return Unauthorized();
+                }
+
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+        }
+
+
 
         [HttpDelete("delete-one/{watchListItemId}/{userId}")]
         public async Task<IActionResult> DeleteAWatchListItem(int watchListItemId, int userId)
