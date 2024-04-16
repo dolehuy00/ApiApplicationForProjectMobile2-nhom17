@@ -156,7 +156,7 @@ namespace MovieAppApi.Controllers
         }
 
 
-        [HttpGet("check/{userId}")]
+        [HttpPost("check/{userId}")]
         public async Task<IActionResult> CheckExistInWatchList([FromBody] WatchListItemDTO watchListItemDTO, int userId)
         {
             try
@@ -186,7 +186,7 @@ namespace MovieAppApi.Controllers
             }
         }
 
-        [HttpGet("check-all/{userId}")]
+        [HttpPost("check-all/{userId}")]
         public async Task<IActionResult> CheckExistInAllWatchList([FromBody] InformationMovieDTO informationMovieDTO, int userId)
         {
             try
