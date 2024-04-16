@@ -453,7 +453,7 @@ Body JSON object
 
 ### Request check a movie is exist in playlist [Authorize]
 ```
-  GET /api/WatchListItem/check/{userId}
+  POST /api/WatchListItem/check/{userId}
 ```
 | Path parameters | Type     | Description                       |
 | :--------  | :------- | :-------------------------------- |
@@ -477,7 +477,7 @@ Body JSON object
 
 ### Request check a movie is exist in all playlist [Authorize]
 ```
-  GET /api/WatchListItem/check-all/{userId}
+  POST /api/WatchListItem/check-all/{userId}
 ```
 | Path parameters | Type     | Description                       |
 | :--------  | :------- | :-------------------------------- |
