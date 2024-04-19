@@ -507,6 +507,19 @@ Body JSON object
 
 
 
+### Request delete a playlist item with information movie [Authorize]
+```
+  DELETE /api/WatchListItem/delete-one/{watchListId}/{movieId}/{tag}/{userId}
+```
+| Path parameters | Type     | Description                       |
+| :--------  | :------- | :-------------------------------- |
+| `watchListId`     | `int` | **Required** |
+| `movieId`     | `int` | **Required** `InformationMovie.MovieId` |
+| `tag`     | `int` | **Required** |
+| `userId`     | `int` | **Required** |
+
+
+
 ### Request delete many playlist item [Authorize]
 ```
   DELETE /api/WatchListItem/delete-many/{userId}

@@ -246,6 +246,40 @@ namespace MovieAppApi.Controllers
             }
         }
 
+        [HttpDelete("delete-one/{watchListId}/{movieId}/{tag}/{userId}")]
+        public async Task<IActionResult> DeleteAWatchListItem(int watchListId, string movieId, string tag, int userId)
+        {
+            try
+            {
+                var userIdInToken = tokenJwtServ.GetUserIdFromToken(HttpContext);
+                if (int.Parse(userIdInToken) == userId)
+                {
+                    var watchListItemToDelete = await _movieContext.WatchListItems
+                        .Where(w => w.WatchListId == watchListId &&
+                               w.InformationMovie.MovieId == movieId &&
+                               w.InformationMovie.Tag == tag)
+                        .FirstOrDefaultAsync();
+                    if (watchListItemToDelete == null)
+                    {
+                        return NotFound("Không tìm thấy mục để xóa.");
+                    }
+                    _movieContext.WatchListItems.Remove(watchListItemToDelete);
+                    await _movieContext.SaveChangesAsync();
+                    await _watchListBO.MinusItemCount(watchListItemToDelete.WatchListId, 1);
+                    return Ok(new { success = true });
+                }
+                else
+                {
+                    return Unauthorized();
+                }
+
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return BadRequest();
+            }
+        }
+
         [HttpDelete("delete-many/{userId}")]
         public async Task<IActionResult> DeleteManyWatchListItems([FromBody] int[] watchListItemIds, int userId)
         {
