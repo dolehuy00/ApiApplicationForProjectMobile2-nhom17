@@ -74,6 +74,20 @@ Body JSON object
 | :--------  | :------- | :-------------------------------- |
 | `email`    | `string` | **Required** |
 
+Response
+`if email not exist`
+```json
+{
+    "existUser": false
+}
+```
+`if email exist`
+```json
+{
+    "existUser": true
+}
+```
+And send a mail to you with code (6 numbers)
 
 ### Request forgot password check code
 ```
@@ -85,7 +99,20 @@ Body JSON object
 | `code`     | `int` | **Required** |
 | `email`    | `string` | **Required** |
 
-
+Response
+`if not mactch`
+```json
+{
+    "codeMatch": false
+}
+```
+`if match`
+```json
+{
+    "codeMatch": true
+}
+```
+Save code for send request forgot change password
 
 ### Request forgot password change password
 ```
@@ -99,6 +126,19 @@ Body JSON object
 | `password` | `string` | **Required** |
 | `passwordConfirm`     | `string` | **Required** |
 
+Response
+`if change success`
+```json
+{
+    "changeSuccess": true
+}
+```
+`if change failue`
+```json
+{
+    "changeSuccess": false
+}
+```
 
 ## History
 
