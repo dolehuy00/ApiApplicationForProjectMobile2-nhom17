@@ -23,6 +23,17 @@ Body JSON object
 | `email`    | `string` | **Required**               |
 | `password` | `string` | **Required**               |
 
+Response success `status 200`
+```json
+{
+    "id": 1,
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJKV1RTZXJ2aWNlQWNjZXNzVG9rZW4iLCJqdGkiOiI0YjkxNjI0MC00MGFjLTQ2OWYtODA0My0xN2UwMTUxMTM1YWYiLCJpYXQiOiIyMy8wNC8yMDI0IDQ6Mjc6NDMgQ0giLCJVc2VySWQiOiIxIiwiRW1haWwiOiJkb2xlaHV5MjIyQGdtYWlsLmNvbSIsImV4cCI6MTcxNDc1MzY2MywiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo0OTg3MCIsImF1ZCI6Imh0dHA6Ly9sb2NhbGhvc3Q6NDk4NzAifQ.8mzUzPHXJAipirQRQ7rwj30HCE3NpMAxxMuUuOlVpoI",
+    "name": "Nguyễn Văn Tèo",
+    "email": "example@gmail.com",
+    "avatar": "https://",
+    "tagSocialNetwork": null
+}
+```
 
 
 ### Request register
@@ -38,6 +49,10 @@ Body JSON object
 | `passwordconfirm`     | `string` | **Required** |
 
 
+```json
+
+```
+
 
 ### Request change information [Authorize]
 ```
@@ -50,7 +65,17 @@ Body JSON object
 | `avatar` | `string` | **Optional** |
 | `name`     | `string` | **Optional** |
 
-
+Respone body `status 200`
+```json
+{
+    "id": 1,
+    "token": "",
+    "name": "New name if send request have attribute 'name'",
+    "email": "dolehuy222@gmail.com",
+    "avatar": "New avatar if send request have attribute 'avatar'",
+    "tagSocialNetwork": null
+}
+```
 
 ### Request change password [Authorize]
 ```
