@@ -94,10 +94,13 @@ namespace MovieAppApi.Service
         {
             try
             {
-                FirebaseApp.Create(new AppOptions()
+                if (FirebaseApp.DefaultInstance == null)
                 {
-                    Credential = GoogleCredential.FromFile("Properties/firebase-adminsdk.json"),
-                });
+                    FirebaseApp.Create(new AppOptions()
+                    {
+                        Credential = GoogleCredential.FromFile("Properties/firebase-adminsdk.json"),
+                    });
+                }
                 FirebaseToken decodedToken = await FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(idToken);
 
                 FirebaseUserTokenInfo tokenInfo = new FirebaseUserTokenInfo();
