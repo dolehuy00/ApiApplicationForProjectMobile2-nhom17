@@ -98,7 +98,7 @@ namespace MovieAppApi.Service
                 {
                     FirebaseApp.Create(new AppOptions()
                     {
-                        Credential = GoogleCredential.FromFile("Properties/firebase-adminsdk.json"),
+                        Credential = GoogleCredential.FromFile("JsonSDK/firebase-adminsdk.json"),
                     });
                 }
                 FirebaseToken decodedToken = await FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(idToken);
@@ -112,12 +112,12 @@ namespace MovieAppApi.Service
             catch (FirebaseAuthException ex)
             {
                 Console.WriteLine("ID token không hợp lệ: " + ex.Message);
-                return null;
+                throw ex;
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Lỗi khi xác minh ID token: " + ex.Message);
-                return null;
+                throw ex;
             }
         }
     }
