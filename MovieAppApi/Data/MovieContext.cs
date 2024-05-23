@@ -41,6 +41,7 @@ namespace MovieAppApi.Data
                 .WithOne(h => h.InformationMovie)
                 .HasForeignKey<WatchListItem>(h => h.InformationMovieId)
                 .OnDelete(DeleteBehavior.Cascade);
+
         }
     }
 }

@@ -9,7 +9,7 @@ namespace MovieAppApi.Service
         public async Task SendPasswordResetEmail(string emailAddress, int randomCode)
         {
             var email = new MimeMessage();
-            email.From.Add(MailboxAddress.Parse("huydo24082002@gmail.com"));
+            email.From.Add(MailboxAddress.Parse("example@gmail.com"));
             email.To.Add(MailboxAddress.Parse(emailAddress));
             email.Subject = "Yêu cầu lấy lại mật khẩu";
 
@@ -19,7 +19,7 @@ namespace MovieAppApi.Service
 
             using var smtp = new SmtpClient();
             await smtp.ConnectAsync("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
-            await smtp.AuthenticateAsync("huydo24082002@gmail.com", ""); // Thay thế bằng địa chỉ email và mật khẩu của bạn
+            await smtp.AuthenticateAsync("example@gmail.com", "your_google_application_password"); // Thay thế bằng địa chỉ email và mật khẩu của bạn
             await smtp.SendAsync(email);
             await smtp.DisconnectAsync(true);
         }

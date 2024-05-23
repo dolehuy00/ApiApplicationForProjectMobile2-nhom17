@@ -30,6 +30,7 @@ namespace MovieAppApi.Data
                 {
                     oldInfomationMovie.Title = informationMovie.Title;
                     oldInfomationMovie.ImageLink = informationMovie.ImageLink;
+                    oldInfomationMovie.Durations = informationMovie.Durations;
                     await _movieContext.SaveChangesAsync();
                     return oldInfomationMovie;
                 }
